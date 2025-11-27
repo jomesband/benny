@@ -219,7 +219,6 @@
             gap: 4px;
         }
 
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -254,10 +253,6 @@
             grid-template-columns: 1fr 1fr;
             gap: 8px;
             margin-top: 16px;
-        }
-
-        .close {
-            display: none;
         }
 
         @media (max-width: 400px) {
@@ -535,6 +530,20 @@
         let chartFiltrado = null;
         let editandoIdx = -1;
 
+        // FUNÇÃO CRÍTICA: Converter DD/MM/YYYY para objeto Date
+        function dateStringToDate(dateStr) {
+            const [d, m, y] = dateStr.split('/');
+            return new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+        }
+
+        // FUNÇÃO CRÍTICA: Converter Date para DD/MM/AA
+        function dateToString(date) {
+            const d = String(date.getDate()).padStart(2, '0');
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const y = String(date.getFullYear()).slice(-2);
+            return `${d}/${m}/${y}`;
+        }
+
         function carregarDados() {
             const saved = localStorage.getItem('dados_benny');
             dados = saved ? JSON.parse(saved) : [...DADOS_INICIAIS];
@@ -543,23 +552,11 @@
         }
 
         function ordenarDados() {
-            dados.sort((a, b) => parseDate(a.date) - parseDate(b.date));
+            dados.sort((a, b) => dateStringToDate(a.date) - dateStringToDate(b.date));
         }
 
         function salvarDados() {
             localStorage.setItem('dados_benny', JSON.stringify(dados));
-        }
-
-        function parseDate(dateStr) {
-            const [d, m, y] = dateStr.split('/');
-            return new Date(y, m - 1, d);
-        }
-
-        function formatDateDDMMYY(date) {
-            const d = String(date.getDate()).padStart(2, '0');
-            const m = String(date.getMonth() + 1).padStart(2, '0');
-            const y = String(date.getFullYear()).slice(-2);
-            return `${d}/${m}/${y}`;
         }
 
         function adicionarPeso() {
@@ -573,7 +570,7 @@
             }
 
             const date = new Date(dataInput);
-            const dateStr = formatDateDDMMYY(date);
+            const dateStr = dateToString(date);
 
             dados.push({ date: dateStr, weight: peso, notes: notas });
             ordenarDados();
@@ -591,7 +588,8 @@
         function abrirEditModal(idx) {
             editandoIdx = idx;
             const item = dados[idx];
-            document.getElementById('editData').value = item.date.split('/').reverse().join('-');
+            const date = dateStringToDate(item.date);
+            document.getElementById('editData').value = date.toISOString().split('T')[0];
             document.getElementById('editPeso').value = item.weight;
             document.getElementById('editNotas').value = item.notes;
             document.getElementById('editModal').style.display = 'block';
@@ -613,7 +611,7 @@
             }
 
             const date = new Date(dataInput);
-            const dateStr = formatDateDDMMYY(date);
+            const dateStr = dateToString(date);
 
             dados[editandoIdx] = { date: dateStr, weight: peso, notes: notas };
             ordenarDados();
@@ -649,8 +647,8 @@
                     <td>${item.notes}</td>
                     <td>
                         <div class="actions">
-                            <button class="small edit" onclick="abrirEditModal(${idx})">✏️ Editar</button>
-                            <button class="small delete" onclick="apagarRegistro(${idx})">🗑️ Apagar</button>
+                            <button class="small edit" onclick="abrirEditModal(${idx})">✏️</button>
+                            <button class="small delete" onclick="apagarRegistro(${idx})">🗑️</button>
                         </div>
                     </td>
                 `;
@@ -676,6 +674,7 @@
         }
 
         function atualizarGrafico() {
+            // Gráfico GERAL - todos os dados, ordenados
             const labels = dados.map(d => d.date);
             const weights = dados.map(d => d.weight);
 
@@ -708,22 +707,24 @@
                 }
             });
 
-            const inicio = new Date(document.getElementById('dataInicio').value);
-            const fim = new Date(document.getElementById('dataFim').value);
+            // Gráfico FILTRADO - apenas intervalo
+            const dataInicio = new Date(document.getElementById('dataInicio').value);
+            const dataFim = new Date(document.getElementById('dataFim').value);
 
             const filtrado = dados.filter(d => {
-                const data = parseDate(d.date);
-                return data >= inicio && data <= fim;
+                const data = dateStringToDate(d.date);
+                return data >= dataInicio && data <= dataFim;
             });
 
             const labelsFilt = filtrado.map(d => d.date);
             const weightsFilt = filtrado.map(d => d.weight);
 
+            // Dados marcados
             const marcados = [];
             dados.forEach((item, idx) => {
                 if (localStorage.getItem(`marcado_${idx}`)) {
-                    const data = parseDate(item.date);
-                    if (data >= inicio && data <= fim) {
+                    const data = dateStringToDate(item.date);
+                    if (data >= dataInicio && data <= dataFim) {
                         marcados.push({ date: item.date, weight: item.weight });
                     }
                 }
