@@ -167,10 +167,6 @@
             gap: 8px;
         }
 
-        .full-width {
-            grid-column: 1 / -1;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -259,15 +255,12 @@
             .controls {
                 grid-template-columns: 1fr;
             }
-
             table {
                 font-size: 12px;
             }
-
             td, th {
                 padding: 6px 2px;
             }
-
             .actions {
                 flex-direction: column;
             }
@@ -310,7 +303,7 @@
                 </div>
                 <div>
                     <label>Data Fim:</label>
-                    <input type="date" id="dataFim" value="2025-10-31">
+                    <input type="date" id="dataFim" value="2025-11-26">
                 </div>
             </div>
             <div class="button-group">
@@ -381,148 +374,148 @@
 
     <script>
         const DADOS_INICIAIS = [
-            {date: "7/8/2024", weight: 0, notes: ""},
-            {date: "9/2/2024", weight: 1000, notes: "Ração pequeno"},
-            {date: "9/10/2024", weight: 1220, notes: ""},
-            {date: "10/2/2024", weight: 1610, notes: ""},
-            {date: "10/30/2024", weight: 2330, notes: ""},
-            {date: "1/16/2025", weight: 4250, notes: ""},
-            {date: "2/25/2025", weight: 4590, notes: ""},
-            {date: "3/5/2025", weight: 4540, notes: "Ração adulto"},
-            {date: "5/15/2025", weight: 4150, notes: ""},
-            {date: "5/17/2025", weight: 4213, notes: "Ração pequeno"},
-            {date: "5/18/2025", weight: 4213, notes: ""},
-            {date: "5/19/2025", weight: 4235, notes: ""},
-            {date: "5/20/2025", weight: 4225, notes: ""},
-            {date: "5/21/2025", weight: 4222, notes: ""},
-            {date: "5/22/2025", weight: 4268, notes: ""},
-            {date: "5/23/2025", weight: 4236, notes: ""},
-            {date: "5/24/2025", weight: 4245, notes: ""},
-            {date: "5/25/2025", weight: 4243, notes: ""},
-            {date: "5/26/2025", weight: 4225, notes: ""},
-            {date: "5/27/2025", weight: 4247, notes: ""},
-            {date: "5/28/2025", weight: 4268, notes: ""},
-            {date: "5/29/2025", weight: 4270, notes: ""},
-            {date: "5/31/2025", weight: 4312, notes: ""},
-            {date: "6/1/2025", weight: 4299, notes: ""},
-            {date: "6/2/2025", weight: 4312, notes: ""},
-            {date: "6/3/2025", weight: 4369, notes: ""},
-            {date: "6/4/2025", weight: 4383, notes: ""},
-            {date: "6/6/2025", weight: 4400, notes: ""},
-            {date: "6/7/2025", weight: 4425, notes: ""},
-            {date: "6/8/2025", weight: 4423, notes: ""},
-            {date: "6/10/2025", weight: 4466, notes: ""},
-            {date: "6/12/2025", weight: 4498, notes: ""},
-            {date: "6/13/2025", weight: 4476, notes: ""},
-            {date: "6/14/2025", weight: 4470, notes: ""},
-            {date: "6/15/2025", weight: 4518, notes: ""},
-            {date: "6/18/2025", weight: 4593, notes: ""},
-            {date: "6/19/2025", weight: 4639, notes: ""},
-            {date: "6/21/2025", weight: 4623, notes: ""},
-            {date: "6/22/2025", weight: 4639, notes: ""},
-            {date: "6/23/2025", weight: 4664, notes: ""},
-            {date: "6/25/2025", weight: 4663, notes: ""},
-            {date: "6/27/2025", weight: 4727, notes: ""},
-            {date: "6/30/2025", weight: 4781, notes: ""},
-            {date: "7/9/2025", weight: 4780, notes: ""},
-            {date: "7/10/2025", weight: 4830, notes: ""},
-            {date: "7/12/2025", weight: 4832, notes: ""},
-            {date: "7/16/2025", weight: 4896, notes: ""},
-            {date: "7/26/2025", weight: 4994, notes: ""},
-            {date: "7/28/2025", weight: 5014, notes: ""},
-            {date: "7/30/2025", weight: 4996, notes: ""},
-            {date: "8/3/2025", weight: 4954, notes: ""},
-            {date: "8/4/2025", weight: 4953, notes: ""},
-            {date: "8/7/2025", weight: 4928, notes: ""},
-            {date: "8/10/2025", weight: 4962, notes: ""},
-            {date: "8/14/2025", weight: 4941, notes: ""},
-            {date: "8/23/2025", weight: 4930, notes: "Ração adulto"},
-            {date: "8/25/2025", weight: 4884, notes: ""},
-            {date: "8/26/2025", weight: 4838, notes: ""},
-            {date: "8/27/2025", weight: 4824, notes: ""},
-            {date: "8/28/2025", weight: 4793, notes: ""},
-            {date: "8/29/2025", weight: 4798, notes: ""},
-            {date: "8/30/2025", weight: 4775, notes: ""},
-            {date: "9/2/2025", weight: 4755, notes: ""},
-            {date: "9/5/2025", weight: 4802, notes: ""},
-            {date: "9/6/2025", weight: 4676, notes: ""},
-            {date: "9/7/2025", weight: 4656, notes: ""},
-            {date: "9/9/2025", weight: 4619, notes: ""},
-            {date: "9/10/2025", weight: 4642, notes: ""},
-            {date: "9/11/2025", weight: 4610, notes: ""},
-            {date: "9/12/2025", weight: 4620, notes: ""},
-            {date: "9/13/2025", weight: 4582, notes: ""},
-            {date: "9/14/2025", weight: 4538, notes: ""},
-            {date: "9/15/2025", weight: 4562, notes: ""},
-            {date: "9/16/2025", weight: 4556, notes: ""},
-            {date: "9/17/2025", weight: 4561, notes: ""},
-            {date: "9/18/2025", weight: 4560, notes: "Ração pequeno; Vet."},
-            {date: "9/19/2025", weight: 4558, notes: ""},
-            {date: "9/20/2025", weight: 4550, notes: ""},
-            {date: "9/21/2025", weight: 4530, notes: ""},
-            {date: "9/22/2025", weight: 4536, notes: ""},
-            {date: "9/25/2025", weight: 4501, notes: ""},
-            {date: "9/26/2025", weight: 4508, notes: ""},
-            {date: "9/27/2025", weight: 4523, notes: ""},
-            {date: "9/28/2025", weight: 4536, notes: ""},
-            {date: "9/29/2025", weight: 4521, notes: ""},
-            {date: "9/30/2025", weight: 4500, notes: ""},
-            {date: "10/1/2025", weight: 4495, notes: ""},
-            {date: "10/2/2025", weight: 4506, notes: ""},
-            {date: "10/3/2025", weight: 4475, notes: ""},
-            {date: "10/4/2025", weight: 4466, notes: ""},
-            {date: "10/5/2025", weight: 4475, notes: ""},
-            {date: "10/6/2025", weight: 4475, notes: ""},
-            {date: "10/7/2025", weight: 4444, notes: ""},
-            {date: "10/8/2025", weight: 4420, notes: ""},
-            {date: "10/9/2025", weight: 4418, notes: ""},
+            {date: "08/07/2024", weight: 0, notes: ""},
+            {date: "02/09/2024", weight: 1000, notes: "Ração pequeno"},
+            {date: "10/09/2024", weight: 1220, notes: ""},
+            {date: "02/10/2024", weight: 1610, notes: ""},
+            {date: "30/10/2024", weight: 2330, notes: ""},
+            {date: "16/01/2025", weight: 4250, notes: ""},
+            {date: "25/02/2025", weight: 4590, notes: ""},
+            {date: "05/03/2025", weight: 4540, notes: "Ração adulto"},
+            {date: "15/05/2025", weight: 4150, notes: ""},
+            {date: "17/05/2025", weight: 4213, notes: "Ração pequeno"},
+            {date: "18/05/2025", weight: 4213, notes: ""},
+            {date: "19/05/2025", weight: 4235, notes: ""},
+            {date: "20/05/2025", weight: 4225, notes: ""},
+            {date: "21/05/2025", weight: 4222, notes: ""},
+            {date: "22/05/2025", weight: 4268, notes: ""},
+            {date: "23/05/2025", weight: 4236, notes: ""},
+            {date: "24/05/2025", weight: 4245, notes: ""},
+            {date: "25/05/2025", weight: 4243, notes: ""},
+            {date: "26/05/2025", weight: 4225, notes: ""},
+            {date: "27/05/2025", weight: 4247, notes: ""},
+            {date: "28/05/2025", weight: 4268, notes: ""},
+            {date: "29/05/2025", weight: 4270, notes: ""},
+            {date: "31/05/2025", weight: 4312, notes: ""},
+            {date: "01/06/2025", weight: 4299, notes: ""},
+            {date: "02/06/2025", weight: 4312, notes: ""},
+            {date: "03/06/2025", weight: 4369, notes: ""},
+            {date: "04/06/2025", weight: 4383, notes: ""},
+            {date: "06/06/2025", weight: 4400, notes: ""},
+            {date: "07/06/2025", weight: 4425, notes: ""},
+            {date: "08/06/2025", weight: 4423, notes: ""},
+            {date: "10/06/2025", weight: 4466, notes: ""},
+            {date: "12/06/2025", weight: 4498, notes: ""},
+            {date: "13/06/2025", weight: 4476, notes: ""},
+            {date: "14/06/2025", weight: 4470, notes: ""},
+            {date: "15/06/2025", weight: 4518, notes: ""},
+            {date: "18/06/2025", weight: 4593, notes: ""},
+            {date: "19/06/2025", weight: 4639, notes: ""},
+            {date: "21/06/2025", weight: 4623, notes: ""},
+            {date: "22/06/2025", weight: 4639, notes: ""},
+            {date: "23/06/2025", weight: 4664, notes: ""},
+            {date: "25/06/2025", weight: 4663, notes: ""},
+            {date: "27/06/2025", weight: 4727, notes: ""},
+            {date: "30/06/2025", weight: 4781, notes: ""},
+            {date: "09/07/2025", weight: 4780, notes: ""},
+            {date: "10/07/2025", weight: 4830, notes: ""},
+            {date: "12/07/2025", weight: 4832, notes: ""},
+            {date: "16/07/2025", weight: 4896, notes: ""},
+            {date: "26/07/2025", weight: 4994, notes: ""},
+            {date: "28/07/2025", weight: 5014, notes: ""},
+            {date: "30/07/2025", weight: 4996, notes: ""},
+            {date: "03/08/2025", weight: 4954, notes: ""},
+            {date: "04/08/2025", weight: 4953, notes: ""},
+            {date: "07/08/2025", weight: 4928, notes: ""},
+            {date: "10/08/2025", weight: 4962, notes: ""},
+            {date: "14/08/2025", weight: 4941, notes: ""},
+            {date: "23/08/2025", weight: 4930, notes: "Ração adulto"},
+            {date: "25/08/2025", weight: 4884, notes: ""},
+            {date: "26/08/2025", weight: 4838, notes: ""},
+            {date: "27/08/2025", weight: 4824, notes: ""},
+            {date: "28/08/2025", weight: 4793, notes: ""},
+            {date: "29/08/2025", weight: 4798, notes: ""},
+            {date: "30/08/2025", weight: 4775, notes: ""},
+            {date: "02/09/2025", weight: 4755, notes: ""},
+            {date: "05/09/2025", weight: 4802, notes: ""},
+            {date: "06/09/2025", weight: 4676, notes: ""},
+            {date: "07/09/2025", weight: 4656, notes: ""},
+            {date: "09/09/2025", weight: 4619, notes: ""},
+            {date: "10/09/2025", weight: 4642, notes: ""},
+            {date: "11/09/2025", weight: 4610, notes: ""},
+            {date: "12/09/2025", weight: 4620, notes: ""},
+            {date: "13/09/2025", weight: 4582, notes: ""},
+            {date: "14/09/2025", weight: 4538, notes: ""},
+            {date: "15/09/2025", weight: 4562, notes: ""},
+            {date: "16/09/2025", weight: 4556, notes: ""},
+            {date: "17/09/2025", weight: 4561, notes: ""},
+            {date: "18/09/2025", weight: 4560, notes: "Ração pequeno; Vet."},
+            {date: "19/09/2025", weight: 4558, notes: ""},
+            {date: "20/09/2025", weight: 4550, notes: ""},
+            {date: "21/09/2025", weight: 4530, notes: ""},
+            {date: "22/09/2025", weight: 4536, notes: ""},
+            {date: "25/09/2025", weight: 4501, notes: ""},
+            {date: "26/09/2025", weight: 4508, notes: ""},
+            {date: "27/09/2025", weight: 4523, notes: ""},
+            {date: "28/09/2025", weight: 4536, notes: ""},
+            {date: "29/09/2025", weight: 4521, notes: ""},
+            {date: "30/09/2025", weight: 4500, notes: ""},
+            {date: "01/10/2025", weight: 4495, notes: ""},
+            {date: "02/10/2025", weight: 4506, notes: ""},
+            {date: "03/10/2025", weight: 4475, notes: ""},
+            {date: "04/10/2025", weight: 4466, notes: ""},
+            {date: "05/10/2025", weight: 4475, notes: ""},
+            {date: "06/10/2025", weight: 4475, notes: ""},
+            {date: "07/10/2025", weight: 4444, notes: ""},
+            {date: "08/10/2025", weight: 4420, notes: ""},
+            {date: "09/10/2025", weight: 4418, notes: ""},
             {date: "10/10/2025", weight: 4400, notes: ""},
-            {date: "10/11/2025", weight: 4419, notes: ""},
-            {date: "10/12/2025", weight: 4388, notes: ""},
-            {date: "10/13/2025", weight: 4377, notes: ""},
-            {date: "10/14/2025", weight: 4383, notes: ""},
-            {date: "10/15/2025", weight: 4377, notes: ""},
-            {date: "10/16/2025", weight: 4346, notes: ""},
-            {date: "10/17/2025", weight: 4334, notes: "Vet.; Análises"},
-            {date: "10/18/2025", weight: 4328, notes: ""},
-            {date: "10/19/2025", weight: 4310, notes: ""},
-            {date: "10/20/2025", weight: 4297, notes: ""},
-            {date: "10/21/2025", weight: 4302, notes: ""},
-            {date: "10/22/2025", weight: 4290, notes: ""},
-            {date: "10/23/2025", weight: 4303, notes: ""},
-            {date: "10/24/2025", weight: 4313, notes: ""},
-            {date: "10/25/2025", weight: 4323, notes: ""},
-            {date: "10/26/2025", weight: 4338, notes: ""},
-            {date: "10/27/2025", weight: 4300, notes: ""},
-            {date: "10/28/2025", weight: 4272, notes: ""},
-            {date: "10/29/2025", weight: 4281, notes: ""},
-            {date: "10/30/2025", weight: 4273, notes: ""},
-            {date: "10/31/2025", weight: 4298, notes: ""},
-            {date: "11/1/2025", weight: 4268, notes: ""},
-            {date: "11/2/2025", weight: 4265, notes: ""},
-            {date: "11/3/2025", weight: 4262, notes: ""},
-            {date: "11/4/2025", weight: 4263, notes: ""},
-            {date: "11/5/2025", weight: 4281, notes: "Ração adulto"},
-            {date: "11/6/2025", weight: 4301, notes: ""},
-            {date: "11/7/2025", weight: 4264, notes: ""},
-            {date: "11/8/2025", weight: 4274, notes: ""},
-            {date: "11/9/2025", weight: 4267, notes: ""},
-            {date: "11/10/2025", weight: 4262, notes: ""},
+            {date: "11/10/2025", weight: 4419, notes: ""},
+            {date: "12/10/2025", weight: 4388, notes: ""},
+            {date: "13/10/2025", weight: 4377, notes: ""},
+            {date: "14/10/2025", weight: 4383, notes: ""},
+            {date: "15/10/2025", weight: 4377, notes: ""},
+            {date: "16/10/2025", weight: 4346, notes: ""},
+            {date: "17/10/2025", weight: 4334, notes: "Vet.; Análises"},
+            {date: "18/10/2025", weight: 4328, notes: ""},
+            {date: "19/10/2025", weight: 4310, notes: ""},
+            {date: "20/10/2025", weight: 4297, notes: ""},
+            {date: "21/10/2025", weight: 4302, notes: ""},
+            {date: "22/10/2025", weight: 4290, notes: ""},
+            {date: "23/10/2025", weight: 4303, notes: ""},
+            {date: "24/10/2025", weight: 4313, notes: ""},
+            {date: "25/10/2025", weight: 4323, notes: ""},
+            {date: "26/10/2025", weight: 4338, notes: ""},
+            {date: "27/10/2025", weight: 4300, notes: ""},
+            {date: "28/10/2025", weight: 4272, notes: ""},
+            {date: "29/10/2025", weight: 4281, notes: ""},
+            {date: "30/10/2025", weight: 4273, notes: ""},
+            {date: "31/10/2025", weight: 4298, notes: ""},
+            {date: "01/11/2025", weight: 4268, notes: ""},
+            {date: "02/11/2025", weight: 4265, notes: ""},
+            {date: "03/11/2025", weight: 4262, notes: ""},
+            {date: "04/11/2025", weight: 4263, notes: ""},
+            {date: "05/11/2025", weight: 4281, notes: "Ração adulto"},
+            {date: "06/11/2025", weight: 4301, notes: ""},
+            {date: "07/11/2025", weight: 4264, notes: ""},
+            {date: "08/11/2025", weight: 4274, notes: ""},
+            {date: "09/11/2025", weight: 4267, notes: ""},
+            {date: "10/11/2025", weight: 4262, notes: ""},
             {date: "11/11/2025", weight: 4245, notes: ""},
-            {date: "11/12/2025", weight: 4254, notes: ""},
-            {date: "11/13/2025", weight: 4268, notes: ""},
-            {date: "11/14/2025", weight: 4253, notes: ""},
-            {date: "11/15/2025", weight: 4277, notes: ""},
-            {date: "11/16/2025", weight: 4254, notes: ""},
-            {date: "11/17/2025", weight: 4253, notes: ""},
-            {date: "11/18/2025", weight: 4221, notes: ""},
-            {date: "11/19/2025", weight: 4225, notes: ""},
-            {date: "11/20/2025", weight: 4245, notes: ""},
-            {date: "11/21/2025", weight: 4245, notes: ""},
-            {date: "11/23/2025", weight: 4256, notes: ""},
-            {date: "11/24/2025", weight: 4239, notes: ""},
-            {date: "11/25/2025", weight: 4240, notes: ""},
-            {date: "11/26/2025", weight: 4190, notes: ""}
+            {date: "12/11/2025", weight: 4254, notes: ""},
+            {date: "13/11/2025", weight: 4268, notes: ""},
+            {date: "14/11/2025", weight: 4253, notes: ""},
+            {date: "15/11/2025", weight: 4277, notes: ""},
+            {date: "16/11/2025", weight: 4254, notes: ""},
+            {date: "17/11/2025", weight: 4253, notes: ""},
+            {date: "18/11/2025", weight: 4221, notes: ""},
+            {date: "19/11/2025", weight: 4225, notes: ""},
+            {date: "20/11/2025", weight: 4245, notes: ""},
+            {date: "21/11/2025", weight: 4245, notes: ""},
+            {date: "23/11/2025", weight: 4256, notes: ""},
+            {date: "24/11/2025", weight: 4239, notes: ""},
+            {date: "25/11/2025", weight: 4240, notes: ""},
+            {date: "26/11/2025", weight: 4190, notes: ""}
         ];
 
         let dados = [];
@@ -530,17 +523,15 @@
         let chartFiltrado = null;
         let editandoIdx = -1;
 
-        // FUNÇÃO CRÍTICA: Converter DD/MM/YYYY para objeto Date
         function dateStringToDate(dateStr) {
             const [d, m, y] = dateStr.split('/');
             return new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
         }
 
-        // FUNÇÃO CRÍTICA: Converter Date para DD/MM/AA
         function dateToString(date) {
             const d = String(date.getDate()).padStart(2, '0');
             const m = String(date.getMonth() + 1).padStart(2, '0');
-            const y = String(date.getFullYear()).slice(-2);
+            const y = date.getFullYear();
             return `${d}/${m}/${y}`;
         }
 
@@ -674,7 +665,6 @@
         }
 
         function atualizarGrafico() {
-            // Gráfico GERAL - todos os dados, ordenados
             const labels = dados.map(d => d.date);
             const weights = dados.map(d => d.weight);
 
@@ -698,16 +688,11 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: true }
-                    },
-                    scales: {
-                        y: { beginAtZero: false }
-                    }
+                    plugins: { legend: { display: true } },
+                    scales: { y: { beginAtZero: false } }
                 }
             });
 
-            // Gráfico FILTRADO - apenas intervalo
             const dataInicio = new Date(document.getElementById('dataInicio').value);
             const dataFim = new Date(document.getElementById('dataFim').value);
 
@@ -719,7 +704,6 @@
             const labelsFilt = filtrado.map(d => d.date);
             const weightsFilt = filtrado.map(d => d.weight);
 
-            // Dados marcados
             const marcados = [];
             dados.forEach((item, idx) => {
                 if (localStorage.getItem(`marcado_${idx}`)) {
@@ -760,26 +744,15 @@
 
             chartFiltrado = new Chart(document.getElementById('chartFiltrado'), {
                 type: 'line',
-                data: {
-                    labels: labelsFilt,
-                    datasets: datasets
-                },
+                data: { labels: labelsFilt, datasets: datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: true },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.dataset.label + ': ' + context.parsed.y + 'g';
-                                }
-                            }
-                        }
+                        tooltip: { callbacks: { label: (context) => context.dataset.label + ': ' + context.parsed.y + 'g' } }
                     },
-                    scales: {
-                        y: { beginAtZero: false }
-                    }
+                    scales: { y: { beginAtZero: false } }
                 }
             });
         }
@@ -789,7 +762,6 @@
             dados.forEach(item => {
                 csv += `"${item.date}","${item.weight}","${item.notes}"\n`;
             });
-
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -799,9 +771,7 @@
 
         window.onclick = function(event) {
             const modal = document.getElementById('editModal');
-            if (event.target == modal) {
-                fecharModal();
-            }
+            if (event.target == modal) fecharModal();
         }
 
         if ('serviceWorker' in navigator) {
