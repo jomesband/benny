@@ -274,11 +274,12 @@
                         borderColor: '#217B7F',
                         backgroundColor: 'rgba(33, 123, 127, 0.5)',
                         borderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
+                        pointRadius: 2,
+                        pointHoverRadius: 4,
                         pointBackgroundColor: '#217B7F',
                         showLine: true,
-                        tension: 0.3,
+                        tension: 0,
+                        stepped: 'middle',
                         fill: false
                     }]
                 },
@@ -304,7 +305,7 @@
             const marcados = [];
             dados.forEach((item, idx) => {if(localStorage.getItem(`marcado_${idx}`)) {const data = dateStringToDate(item.date); if(data >= dataInicio && data <= dataFim) {marcados.push({x: data, y: item.weight, dateStr: item.date});}}});
             if(chartFiltrado) chartFiltrado.destroy();
-            const datasets2 = [{label: 'Peso (g)', data: datasetFiltrado, borderColor: '#FF6B6B', backgroundColor: 'rgba(255, 107, 107, 0.5)', borderWidth: 2, pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: '#FF6B6B', showLine: true, tension: 0.3, fill: false}];
+            const datasets2 = [{label: 'Peso (g)', data: datasetFiltrado, borderColor: '#FF6B6B', backgroundColor: 'rgba(255, 107, 107, 0.5)', borderWidth: 2, pointRadius: 2, pointHoverRadius: 4, pointBackgroundColor: '#FF6B6B', showLine: true, tension: 0, stepped: 'middle', fill: false}];
             if(marcados.length > 0) {datasets2.push({label: 'Marcados', data: marcados, borderColor: '#FFD700', backgroundColor: '#FFD700', showLine: false, pointRadius: 6, pointHoverRadius: 8, pointBorderColor: '#217B7F', pointBorderWidth: 2, type: 'scatter'});}
             chartFiltrado = new Chart(document.getElementById('chartFiltrado'), {
                 type: 'scatter',
