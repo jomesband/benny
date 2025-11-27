@@ -47,7 +47,6 @@
         .modal-content { background-color: #fff; margin: 20px auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
         .modal-header { font-size: 18px; font-weight: 600; color: #217B7F; margin-bottom: 16px; }
         .modal-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }
-        .status-sync { font-size: 12px; color: #666; margin-top: 8px; text-align: center; }
     </style>
 </head>
 <body>
@@ -61,7 +60,6 @@
                 <div><label>Notas (opcional):</label><input type="text" id="novasNotas" placeholder="ex: Ração adulto"></div>
             </div>
             <button class="success" onclick="adicionarPeso()">➕ Adicionar Registro</button>
-            <div class="status-sync" id="statusSync"></div>
         </div>
         <div class="section">
             <div class="section-title">🔍 Filtros</div>
@@ -106,124 +104,163 @@
         </div>
     </div>
     <script>
+        const DADOS_INICIAIS = [
+            {date: "08/07/2024", weight: 0, notes: ""},
+            {date: "02/09/2024", weight: 1000, notes: "Ração pequeno"},
+            {date: "10/09/2024", weight: 1220, notes: ""},
+            {date: "02/10/2024", weight: 1610, notes: ""},
+            {date: "30/10/2024", weight: 2330, notes: ""},
+            {date: "16/01/2025", weight: 4250, notes: ""},
+            {date: "25/02/2025", weight: 4590, notes: ""},
+            {date: "05/03/2025", weight: 4540, notes: "Ração adulto"},
+            {date: "15/05/2025", weight: 4150, notes: ""},
+            {date: "17/05/2025", weight: 4213, notes: "Ração pequeno"},
+            {date: "18/05/2025", weight: 4213, notes: ""},
+            {date: "19/05/2025", weight: 4235, notes: ""},
+            {date: "20/05/2025", weight: 4225, notes: ""},
+            {date: "21/05/2025", weight: 4222, notes: ""},
+            {date: "22/05/2025", weight: 4268, notes: ""},
+            {date: "23/05/2025", weight: 4236, notes: ""},
+            {date: "24/05/2025", weight: 4245, notes: ""},
+            {date: "25/05/2025", weight: 4243, notes: ""},
+            {date: "26/05/2025", weight: 4225, notes: ""},
+            {date: "27/05/2025", weight: 4247, notes: ""},
+            {date: "28/05/2025", weight: 4268, notes: ""},
+            {date: "29/05/2025", weight: 4270, notes: ""},
+            {date: "31/05/2025", weight: 4312, notes: ""},
+            {date: "01/06/2025", weight: 4299, notes: ""},
+            {date: "02/06/2025", weight: 4312, notes: ""},
+            {date: "03/06/2025", weight: 4369, notes: ""},
+            {date: "04/06/2025", weight: 4383, notes: ""},
+            {date: "06/06/2025", weight: 4400, notes: ""},
+            {date: "07/06/2025", weight: 4425, notes: ""},
+            {date: "08/06/2025", weight: 4423, notes: ""},
+            {date: "10/06/2025", weight: 4466, notes: ""},
+            {date: "12/06/2025", weight: 4498, notes: ""},
+            {date: "13/06/2025", weight: 4476, notes: ""},
+            {date: "14/06/2025", weight: 4470, notes: ""},
+            {date: "15/06/2025", weight: 4518, notes: ""},
+            {date: "18/06/2025", weight: 4593, notes: ""},
+            {date: "19/06/2025", weight: 4639, notes: ""},
+            {date: "21/06/2025", weight: 4623, notes: ""},
+            {date: "22/06/2025", weight: 4639, notes: ""},
+            {date: "23/06/2025", weight: 4664, notes: ""},
+            {date: "25/06/2025", weight: 4663, notes: ""},
+            {date: "27/06/2025", weight: 4727, notes: ""},
+            {date: "30/06/2025", weight: 4781, notes: ""},
+            {date: "09/07/2025", weight: 4780, notes: ""},
+            {date: "10/07/2025", weight: 4830, notes: ""},
+            {date: "12/07/2025", weight: 4832, notes: ""},
+            {date: "16/07/2025", weight: 4896, notes: ""},
+            {date: "26/07/2025", weight: 4994, notes: ""},
+            {date: "28/07/2025", weight: 5014, notes: ""},
+            {date: "30/07/2025", weight: 4996, notes: ""},
+            {date: "03/08/2025", weight: 4954, notes: ""},
+            {date: "04/08/2025", weight: 4953, notes: ""},
+            {date: "07/08/2025", weight: 4928, notes: ""},
+            {date: "10/08/2025", weight: 4962, notes: ""},
+            {date: "14/08/2025", weight: 4941, notes: ""},
+            {date: "23/08/2025", weight: 4930, notes: "Ração adulto"},
+            {date: "25/08/2025", weight: 4884, notes: ""},
+            {date: "26/08/2025", weight: 4838, notes: ""},
+            {date: "27/08/2025", weight: 4824, notes: ""},
+            {date: "28/08/2025", weight: 4793, notes: ""},
+            {date: "29/08/2025", weight: 4798, notes: ""},
+            {date: "30/08/2025", weight: 4775, notes: ""},
+            {date: "02/09/2025", weight: 4755, notes: ""},
+            {date: "05/09/2025", weight: 4802, notes: ""},
+            {date: "06/09/2025", weight: 4676, notes: ""},
+            {date: "07/09/2025", weight: 4656, notes: ""},
+            {date: "09/09/2025", weight: 4619, notes: ""},
+            {date: "10/09/2025", weight: 4642, notes: ""},
+            {date: "11/09/2025", weight: 4610, notes: ""},
+            {date: "12/09/2025", weight: 4620, notes: ""},
+            {date: "13/09/2025", weight: 4582, notes: ""},
+            {date: "14/09/2025", weight: 4538, notes: ""},
+            {date: "15/09/2025", weight: 4562, notes: ""},
+            {date: "16/09/2025", weight: 4556, notes: ""},
+            {date: "17/09/2025", weight: 4561, notes: ""},
+            {date: "18/09/2025", weight: 4560, notes: "Ração pequeno"},
+            {date: "19/09/2025", weight: 4558, notes: ""},
+            {date: "20/09/2025", weight: 4550, notes: ""},
+            {date: "21/09/2025", weight: 4530, notes: ""},
+            {date: "22/09/2025", weight: 4536, notes: ""},
+            {date: "25/09/2025", weight: 4501, notes: ""},
+            {date: "26/09/2025", weight: 4508, notes: ""},
+            {date: "27/09/2025", weight: 4523, notes: ""},
+            {date: "28/09/2025", weight: 4536, notes: ""},
+            {date: "29/09/2025", weight: 4521, notes: ""},
+            {date: "30/09/2025", weight: 4500, notes: ""},
+            {date: "01/10/2025", weight: 4495, notes: ""},
+            {date: "02/10/2025", weight: 4506, notes: ""},
+            {date: "03/10/2025", weight: 4475, notes: ""},
+            {date: "04/10/2025", weight: 4466, notes: ""},
+            {date: "05/10/2025", weight: 4475, notes: ""},
+            {date: "06/10/2025", weight: 4475, notes: ""},
+            {date: "07/10/2025", weight: 4444, notes: ""},
+            {date: "08/10/2025", weight: 4420, notes: ""},
+            {date: "09/10/2025", weight: 4418, notes: ""},
+            {date: "10/10/2025", weight: 4400, notes: ""},
+            {date: "11/10/2025", weight: 4419, notes: ""},
+            {date: "12/10/2025", weight: 4388, notes: ""},
+            {date: "13/10/2025", weight: 4377, notes: ""},
+            {date: "14/10/2025", weight: 4383, notes: ""},
+            {date: "15/10/2025", weight: 4377, notes: ""},
+            {date: "16/10/2025", weight: 4346, notes: ""},
+            {date: "17/10/2025", weight: 4334, notes: "Vet.; Análises"},
+            {date: "18/10/2025", weight: 4328, notes: ""},
+            {date: "19/10/2025", weight: 4310, notes: ""},
+            {date: "20/10/2025", weight: 4297, notes: ""},
+            {date: "21/10/2025", weight: 4302, notes: ""},
+            {date: "22/10/2025", weight: 4290, notes: ""},
+            {date: "23/10/2025", weight: 4303, notes: ""},
+            {date: "24/10/2025", weight: 4313, notes: ""},
+            {date: "25/10/2025", weight: 4323, notes: ""},
+            {date: "26/10/2025", weight: 4338, notes: ""},
+            {date: "27/10/2025", weight: 4300, notes: ""},
+            {date: "28/10/2025", weight: 4272, notes: ""},
+            {date: "29/10/2025", weight: 4281, notes: ""},
+            {date: "30/10/2025", weight: 4273, notes: ""},
+            {date: "31/10/2025", weight: 4298, notes: ""},
+            {date: "01/11/2025", weight: 4268, notes: ""},
+            {date: "02/11/2025", weight: 4265, notes: ""},
+            {date: "03/11/2025", weight: 4262, notes: ""},
+            {date: "04/11/2025", weight: 4263, notes: ""},
+            {date: "05/11/2025", weight: 4281, notes: "Ração adulto"},
+            {date: "06/11/2025", weight: 4301, notes: ""},
+            {date: "07/11/2025", weight: 4264, notes: ""},
+            {date: "08/11/2025", weight: 4274, notes: ""},
+            {date: "09/11/2025", weight: 4267, notes: ""},
+            {date: "10/11/2025", weight: 4262, notes: ""},
+            {date: "11/11/2025", weight: 4245, notes: ""},
+            {date: "12/11/2025", weight: 4254, notes: ""},
+            {date: "13/11/2025", weight: 4268, notes: ""},
+            {date: "14/11/2025", weight: 4253, notes: ""},
+            {date: "15/11/2025", weight: 4277, notes: ""},
+            {date: "16/11/2025", weight: 4254, notes: ""},
+            {date: "17/11/2025", weight: 4253, notes: ""},
+            {date: "18/11/2025", weight: 4221, notes: ""},
+            {date: "19/11/2025", weight: 4225, notes: ""},
+            {date: "20/11/2025", weight: 4245, notes: ""},
+            {date: "21/11/2025", weight: 4245, notes: ""},
+            {date: "23/11/2025", weight: 4256, notes: ""},
+            {date: "24/11/2025", weight: 4239, notes: ""},
+            {date: "25/11/2025", weight: 4240, notes: ""},
+            {date: "26/11/2025", weight: 4190, notes: ""}
+        ];
         let dados = [], chartGeral = null, chartFiltrado = null, editandoIdx = -1;
-        
         function dateStringToDate(dateStr) { const [d,m,y]=dateStr.split('/'); return new Date(parseInt(y),parseInt(m)-1,parseInt(d)); }
         function dateToString(date) { const d=String(date.getDate()).padStart(2,'0'); const m=String(date.getMonth()+1).padStart(2,'0'); const y=date.getFullYear(); return `${d}/${m}/${y}`; }
-        
-        async function carregarDadosGithub() {
-            try {
-                const response = await fetch('dados.json?t=' + Date.now(), {cache: 'no-store'});
-                if (!response.ok) throw new Error('Erro ao carregar dados');
-                dados = await response.json();
-                mostrarStatus('✅ Dados carregados do GitHub');
-                carregarTabela();
-                atualizarGrafico();
-            } catch (err) {
-                mostrarStatus('⚠️ Offline - usando dados locais');
-                carregarDadosLocal();
-            }
-        }
-        
-        function carregarDadosLocal() { 
-            const saved = localStorage.getItem('dados_benny'); 
-            dados = saved ? JSON.parse(saved) : []; 
-            carregarTabela();
-            atualizarGrafico();
-        }
-        
-        function salvarDadosLocal() { 
-            localStorage.setItem('dados_benny', JSON.stringify(dados)); 
-        }
-        
-        function mostrarStatus(msg) {
-            const el = document.getElementById('statusSync');
-            if (el) { el.textContent = msg; setTimeout(() => el.textContent = '', 3000); }
-        }
-        
-        function adicionarPeso() { 
-            const dataInput = document.getElementById('novaData').value; 
-            const peso = parseInt(document.getElementById('novoPeso').value); 
-            const notas = document.getElementById('novasNotas').value.trim(); 
-            if(!dataInput||!peso){alert('⚠️ Preencha a data e o peso!');return;} 
-            const date = new Date(dataInput); 
-            const dateStr = dateToString(date); 
-            dados.push({date:dateStr,weight:peso,notes:notas}); 
-            dados.sort((a,b)=>dateStringToDate(a.date)-dateStringToDate(b.date)); 
-            salvarDadosLocal();
-            document.getElementById('novaData').value=''; 
-            document.getElementById('novoPeso').value=''; 
-            document.getElementById('novasNotas').value=''; 
-            carregarTabela(); 
-            atualizarGrafico(); 
-            mostrarStatus('✅ Peso adicionado (salvo localmente)');
-            alert('✅ Peso adicionado com sucesso!'); 
-        }
-        
-        function abrirEditModal(idx) { 
-            editandoIdx=idx; 
-            const item=dados[idx]; 
-            const date=dateStringToDate(item.date); 
-            document.getElementById('editData').value=date.toISOString().split('T')[0]; 
-            document.getElementById('editPeso').value=item.weight; 
-            document.getElementById('editNotas').value=item.notes; 
-            document.getElementById('editModal').style.display='block'; 
-        }
-        
-        function fecharModal() { 
-            document.getElementById('editModal').style.display='none'; 
-            editandoIdx=-1; 
-        }
-        
-        function salvarEdicao() { 
-            const dataInput=document.getElementById('editData').value; 
-            const peso=parseInt(document.getElementById('editPeso').value); 
-            const notas=document.getElementById('editNotas').value.trim(); 
-            if(!dataInput||!peso){alert('⚠️ Preencha a data e o peso!');return;} 
-            const date=new Date(dataInput); 
-            const dateStr=dateToString(date); 
-            dados[editandoIdx]={date:dateStr,weight:peso,notes:notas}; 
-            dados.sort((a,b)=>dateStringToDate(a.date)-dateStringToDate(b.date)); 
-            salvarDadosLocal();
-            fecharModal(); 
-            carregarTabela(); 
-            atualizarGrafico(); 
-            mostrarStatus('✅ Registro actualizado (salvo localmente)');
-            alert('✅ Registro atualizado com sucesso!'); 
-        }
-        
-        function apagarRegistro(idx) { 
-            if(confirm('⚠️ Tem certeza que quer apagar este registro?')){ 
-                dados.splice(idx,1); 
-                salvarDadosLocal();
-                carregarTabela(); 
-                atualizarGrafico(); 
-                mostrarStatus('✅ Registro apagado (salvo localmente)');
-                alert('✅ Registro apagado!'); 
-            } 
-        }
-        
-        function carregarTabela() { 
-            const tableBody=document.getElementById('tableBody'); 
-            tableBody.innerHTML=''; 
-            dados.forEach((item,idx)=>{ 
-                const row=document.createElement('tr'); 
-                const checked=localStorage.getItem(`marcado_${idx}`)?'checked':''; 
-                row.innerHTML=`<td><input type="checkbox" ${checked} onchange="toggleMarcado(${idx})"></td><td>${item.date}</td><td>${item.weight}</td><td>${item.notes}</td><td><div class="actions"><button class="small edit" onclick="abrirEditModal(${idx})">✏️</button><button class="small delete" onclick="apagarRegistro(${idx})">🗑️</button></div></td>`; 
-                tableBody.appendChild(row); 
-            }); 
-        }
-        
-        function toggleMarcado(idx) { 
-            if(localStorage.getItem(`marcado_${idx}`)){localStorage.removeItem(`marcado_${idx}`);}else{localStorage.setItem(`marcado_${idx}`,'true');} 
-            atualizarGrafico(); 
-        }
-        
-        function desmarcarTodas() { 
-            for(let i=0;i<dados.length;i++){localStorage.removeItem(`marcado_${i}`);} 
-            carregarTabela(); 
-            atualizarGrafico(); 
-        }
+        function carregarDados() { const saved=localStorage.getItem('dados_benny'); dados=saved?JSON.parse(saved):[...DADOS_INICIAIS]; salvarDados(); }
+        function salvarDados() { localStorage.setItem('dados_benny',JSON.stringify(dados)); }
+        function adicionarPeso() { const dataInput=document.getElementById('novaData').value; const peso=parseInt(document.getElementById('novoPeso').value); const notas=document.getElementById('novasNotas').value.trim(); if(!dataInput||!peso){alert('⚠️ Preencha a data e o peso!');return;} const date=new Date(dataInput); const dateStr=dateToString(date); dados.push({date:dateStr,weight:peso,notes:notas}); dados.sort((a,b)=>dateStringToDate(a.date)-dateStringToDate(b.date)); salvarDados(); document.getElementById('novaData').value=''; document.getElementById('novoPeso').value=''; document.getElementById('novasNotas').value=''; carregarTabela(); atualizarGrafico(); alert('✅ Peso adicionado com sucesso!'); }
+        function abrirEditModal(idx) { editandoIdx=idx; const item=dados[idx]; const date=dateStringToDate(item.date); document.getElementById('editData').value=date.toISOString().split('T')[0]; document.getElementById('editPeso').value=item.weight; document.getElementById('editNotas').value=item.notes; document.getElementById('editModal').style.display='block'; }
+        function fecharModal() { document.getElementById('editModal').style.display='none'; editandoIdx=-1; }
+        function salvarEdicao() { const dataInput=document.getElementById('editData').value; const peso=parseInt(document.getElementById('editPeso').value); const notas=document.getElementById('editNotas').value.trim(); if(!dataInput||!peso){alert('⚠️ Preencha a data e o peso!');return;} const date=new Date(dataInput); const dateStr=dateToString(date); dados[editandoIdx]={date:dateStr,weight:peso,notes:notas}; dados.sort((a,b)=>dateStringToDate(a.date)-dateStringToDate(b.date)); salvarDados(); fecharModal(); carregarTabela(); atualizarGrafico(); alert('✅ Registro atualizado com sucesso!'); }
+        function apagarRegistro(idx) { if(confirm('⚠️ Tem certeza que quer apagar este registro?')){ dados.splice(idx,1); salvarDados(); carregarTabela(); atualizarGrafico(); alert('✅ Registro apagado!'); } }
+        function carregarTabela() { const tableBody=document.getElementById('tableBody'); tableBody.innerHTML=''; dados.forEach((item,idx)=>{ const row=document.createElement('tr'); const checked=localStorage.getItem(`marcado_${idx}`)?'checked':''; row.innerHTML=`<td><input type="checkbox" ${checked} onchange="toggleMarcado(${idx})"></td><td>${item.date}</td><td>${item.weight}</td><td>${item.notes}</td><td><div class="actions"><button class="small edit" onclick="abrirEditModal(${idx})">✏️</button><button class="small delete" onclick="apagarRegistro(${idx})">🗑️</button></div></td>`; tableBody.appendChild(row); }); }
+        function toggleMarcado(idx) { if(localStorage.getItem(`marcado_${idx}`)){localStorage.removeItem(`marcado_${idx}`);}else{localStorage.setItem(`marcado_${idx}`,'true');} atualizarGrafico(); }
+        function desmarcarTodas() { for(let i=0;i<dados.length;i++){localStorage.removeItem(`marcado_${i}`);} carregarTabela(); atualizarGrafico(); }
         
         function atualizarGrafico() {
             const datasetGeral = dados.map(d => ({x: dateStringToDate(d.date), y: d.weight, dateStr: d.date}));
@@ -237,12 +274,11 @@
                         borderColor: '#217B7F',
                         backgroundColor: 'rgba(33, 123, 127, 0.5)',
                         borderWidth: 2,
-                        pointRadius: 2,
-                        pointHoverRadius: 4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
                         pointBackgroundColor: '#217B7F',
                         showLine: true,
-                        tension: 0,
-                        stepped: 'middle',
+                        tension: 0.3,
                         fill: false
                     }]
                 },
@@ -268,7 +304,7 @@
             const marcados = [];
             dados.forEach((item, idx) => {if(localStorage.getItem(`marcado_${idx}`)) {const data = dateStringToDate(item.date); if(data >= dataInicio && data <= dataFim) {marcados.push({x: data, y: item.weight, dateStr: item.date});}}});
             if(chartFiltrado) chartFiltrado.destroy();
-            const datasets2 = [{label: 'Peso (g)', data: datasetFiltrado, borderColor: '#FF6B6B', backgroundColor: 'rgba(255, 107, 107, 0.5)', borderWidth: 2, pointRadius: 2, pointHoverRadius: 4, pointBackgroundColor: '#FF6B6B', showLine: true, tension: 0, stepped: 'middle', fill: false}];
+            const datasets2 = [{label: 'Peso (g)', data: datasetFiltrado, borderColor: '#FF6B6B', backgroundColor: 'rgba(255, 107, 107, 0.5)', borderWidth: 2, pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: '#FF6B6B', showLine: true, tension: 0.3, fill: false}];
             if(marcados.length > 0) {datasets2.push({label: 'Marcados', data: marcados, borderColor: '#FFD700', backgroundColor: '#FFD700', showLine: false, pointRadius: 6, pointHoverRadius: 8, pointBorderColor: '#217B7F', pointBorderWidth: 2, type: 'scatter'});}
             chartFiltrado = new Chart(document.getElementById('chartFiltrado'), {
                 type: 'scatter',
@@ -289,18 +325,11 @@
             });
         }
         
-        function exportarCSV() { 
-            let csv='Data,Peso (g),Notas\n'; 
-            dados.forEach(item=>{csv+=`"${item.date}","${item.weight}","${item.notes}"\n`;}); 
-            const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); 
-            const link=document.createElement('a'); 
-            link.href=URL.createObjectURL(blob); 
-            link.download='Benny_Pesos_Export.csv'; 
-            link.click(); 
-        }
-        
+        function exportarCSV() { let csv='Data,Peso (g),Notas\n'; dados.forEach(item=>{csv+=`"${item.date}","${item.weight}","${item.notes}"\n`;}); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download='Benny_Pesos_Export.csv'; link.click(); }
         window.onclick=function(event){const modal=document.getElementById('editModal'); if(event.target==modal)fecharModal();}
-        window.addEventListener('load', carregarDadosGithub);
+        if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').catch(err=>console.log('SW:',err));}
+        window.addEventListener('load', () => {fetch(window.location.href, {cache: 'no-store'}).then(response => response.text()).catch(err => console.log('Update check:', err));});
+        carregarDados(); carregarTabela(); atualizarGrafico();
     </script>
 </body>
 </html>
