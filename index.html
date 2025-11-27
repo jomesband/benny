@@ -139,6 +139,28 @@
             background: #40C057;
         }
 
+        button.small {
+            width: auto;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        button.edit {
+            background: #4A90E2;
+        }
+
+        button.edit:active {
+            background: #357ABD;
+        }
+
+        button.delete {
+            background: #FF6B6B;
+        }
+
+        button.delete:active {
+            background: #E85555;
+        }
+
         .button-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -192,6 +214,52 @@
             margin-top: 12px;
         }
 
+        .actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: #217B7F;
+            margin-bottom: 16px;
+        }
+
+        .modal-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .close {
+            display: none;
+        }
+
         @media (max-width: 400px) {
             .controls {
                 grid-template-columns: 1fr;
@@ -203,6 +271,10 @@
 
             td, th {
                 padding: 6px 2px;
+            }
+
+            .actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -279,10 +351,36 @@
                         <th>Data</th>
                         <th>Peso (g)</th>
                         <th>Notas</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">✏️ Editar Registro</div>
+            <div class="full-width-controls">
+                <div>
+                    <label>Data (DD/MM/YYYY):</label>
+                    <input type="date" id="editData">
+                </div>
+                <div>
+                    <label>Peso (g):</label>
+                    <input type="number" id="editPeso" min="0">
+                </div>
+                <div>
+                    <label>Notas:</label>
+                    <input type="text" id="editNotas">
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button onclick="salvarEdicao()" class="success">💾 Guardar</button>
+                <button onclick="fecharModal()" class="secondary">✕ Cancelar</button>
+            </div>
         </div>
     </div>
 
@@ -435,11 +533,17 @@
         let dados = [];
         let chartGeral = null;
         let chartFiltrado = null;
+        let editandoIdx = -1;
 
         function carregarDados() {
             const saved = localStorage.getItem('dados_benny');
             dados = saved ? JSON.parse(saved) : [...DADOS_INICIAIS];
+            ordenarDados();
             salvarDados();
+        }
+
+        function ordenarDados() {
+            dados.sort((a, b) => parseDate(a.date) - parseDate(b.date));
         }
 
         function salvarDados() {
@@ -472,7 +576,7 @@
             const dateStr = formatDateDDMMYY(date);
 
             dados.push({ date: dateStr, weight: peso, notes: notas });
-            dados.sort((a, b) => parseDate(a.date) - parseDate(b.date));
+            ordenarDados();
             salvarDados();
 
             document.getElementById('novaData').value = '';
@@ -482,6 +586,53 @@
             carregarTabela();
             atualizarGrafico();
             alert('✅ Peso adicionado com sucesso!');
+        }
+
+        function abrirEditModal(idx) {
+            editandoIdx = idx;
+            const item = dados[idx];
+            document.getElementById('editData').value = item.date.split('/').reverse().join('-');
+            document.getElementById('editPeso').value = item.weight;
+            document.getElementById('editNotas').value = item.notes;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function fecharModal() {
+            document.getElementById('editModal').style.display = 'none';
+            editandoIdx = -1;
+        }
+
+        function salvarEdicao() {
+            const dataInput = document.getElementById('editData').value;
+            const peso = parseInt(document.getElementById('editPeso').value);
+            const notas = document.getElementById('editNotas').value.trim();
+
+            if (!dataInput || !peso) {
+                alert('⚠️ Preencha a data e o peso!');
+                return;
+            }
+
+            const date = new Date(dataInput);
+            const dateStr = formatDateDDMMYY(date);
+
+            dados[editandoIdx] = { date: dateStr, weight: peso, notes: notas };
+            ordenarDados();
+            salvarDados();
+
+            fecharModal();
+            carregarTabela();
+            atualizarGrafico();
+            alert('✅ Registro atualizado com sucesso!');
+        }
+
+        function apagarRegistro(idx) {
+            if (confirm('⚠️ Tem certeza que quer apagar este registro?')) {
+                dados.splice(idx, 1);
+                salvarDados();
+                carregarTabela();
+                atualizarGrafico();
+                alert('✅ Registro apagado!');
+            }
         }
 
         function carregarTabela() {
@@ -496,6 +647,12 @@
                     <td>${item.date}</td>
                     <td>${item.weight}</td>
                     <td>${item.notes}</td>
+                    <td>
+                        <div class="actions">
+                            <button class="small edit" onclick="abrirEditModal(${idx})">✏️ Editar</button>
+                            <button class="small delete" onclick="apagarRegistro(${idx})">🗑️ Apagar</button>
+                        </div>
+                    </td>
                 `;
                 tableBody.appendChild(row);
             });
@@ -637,6 +794,13 @@
             link.href = URL.createObjectURL(blob);
             link.download = 'Benny_Pesos_Export.csv';
             link.click();
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target == modal) {
+                fecharModal();
+            }
         }
 
         if ('serviceWorker' in navigator) {
