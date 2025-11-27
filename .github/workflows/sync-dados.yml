@@ -1,0 +1,27 @@
+name: Sincronizar dados JSON
+
+on:
+  push:
+    paths:
+      - 'dados.json'
+      - '.github/workflows/sync-dados.yml'
+  workflow_dispatch:
+
+jobs:
+  update-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Validate JSON
+        run: |
+          python3 -m json.tool dados.json > /dev/null && echo "✅ JSON válido"
+      
+      - name: Commit if needed
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add dados.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "📊 Dados actualizados em $(date -u +'%Y-%m-%d %H:%M:%S') UTC" && git push)
