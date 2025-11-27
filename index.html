@@ -7,363 +7,91 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Peso Benny">
     <meta name="theme-color" content="#217B7F">
-    <meta name="description" content="Rastreador de peso do Benny com gráficos e filtros">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23217B7F' width='192' height='192'/><text x='50%' y='50%' font-size='80' fill='white' text-anchor='middle' dy='.3em' font-weight='bold'>B</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%23217B7F' width='180' height='180' rx='40'/><text x='90' y='90' font-size='80' fill='white' text-anchor='middle' dy='.3em' font-weight='bold'>B</text></svg>">
     <title>Peso Benny</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-user-select: none;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            background: #F5F5F5;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: #333;
-            padding-top: constant(safe-area-inset-top);
-            padding-top: env(safe-area-inset-top);
-        }
-
-        header {
-            background: #217B7F;
-            color: white;
-            padding: 16px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding-top: max(16px, env(safe-area-inset-top));
-        }
-
-        header h1 {
-            font-size: 22px;
-            font-weight: 600;
-        }
-
-        .container {
-            max-width: 100%;
-            padding: 16px;
-            padding-bottom: 32px;
-        }
-
-        .section {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #217B7F;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .full-width-controls {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        label {
-            font-size: 12px;
-            color: #666;
-            display: block;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-
-        input[type="date"], input[type="number"], input[type="text"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #DDD;
-            border-radius: 6px;
-            font-size: 14px;
-            background: #F9F9F9;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px 16px;
-            background: #217B7F;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            -webkit-appearance: none;
-        }
-
-        button:active {
-            background: #1A5F65;
-            transform: scale(0.98);
-        }
-
-        button.secondary {
-            background: #FF6B6B;
-        }
-
-        button.secondary:active {
-            background: #E85555;
-        }
-
-        button.success {
-            background: #51CF66;
-        }
-
-        button.success:active {
-            background: #40C057;
-        }
-
-        button.small {
-            width: auto;
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-
-        button.edit {
-            background: #4A90E2;
-        }
-
-        button.edit:active {
-            background: #357ABD;
-        }
-
-        button.delete {
-            background: #FF6B6B;
-        }
-
-        button.delete:active {
-            background: #E85555;
-        }
-
-        .button-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-            margin-top: 12px;
-        }
-
-        th {
-            background: #217B7F;
-            color: white;
-            padding: 8px 4px;
-            text-align: left;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-        }
-
-        td {
-            padding: 10px 4px;
-            border-bottom: 1px solid #EEE;
-        }
-
-        tr:nth-child(even) {
-            background: #F9F9F9;
-        }
-
-        tr:hover {
-            background: #F0F8F9;
-        }
-
-        input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-            accent-color: #217B7F;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 300px;
-            margin-top: 12px;
-        }
-
-        .actions {
-            display: flex;
-            gap: 4px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.4);
-            padding-top: env(safe-area-inset-top);
-        }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 20px auto;
-            padding: 20px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-        }
-
-        .modal-header {
-            font-size: 18px;
-            font-weight: 600;
-            color: #217B7F;
-            margin-bottom: 16px;
-        }
-
-        .modal-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 16px;
-        }
-
-        @media (max-width: 400px) {
-            .controls {
-                grid-template-columns: 1fr;
-            }
-            table {
-                font-size: 12px;
-            }
-            td, th {
-                padding: 6px 2px;
-            }
-            .actions {
-                flex-direction: column;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+        html, body { width: 100%; height: 100%; background: #F5F5F5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #333; }
+        header { background: #217B7F; color: white; padding: 16px; text-align: center; position: sticky; top: 0; z-index: 100; }
+        header h1 { font-size: 22px; font-weight: 600; }
+        .container { max-width: 100%; padding: 16px; padding-bottom: 32px; }
+        .section { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .section-title { font-size: 16px; font-weight: 600; color: #217B7F; margin-bottom: 12px; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .full-width-controls { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
+        label { font-size: 12px; color: #666; display: block; margin-bottom: 4px; font-weight: 500; }
+        input[type="date"], input[type="number"], input[type="text"] { width: 100%; padding: 8px; border: 1px solid #DDD; border-radius: 6px; font-size: 14px; background: #F9F9F9; }
+        button { width: 100%; padding: 10px 16px; background: #217B7F; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        button:active { background: #1A5F65; transform: scale(0.98); }
+        button.secondary { background: #FF6B6B; }
+        button.secondary:active { background: #E85555; }
+        button.success { background: #51CF66; }
+        button.success:active { background: #40C057; }
+        button.small { width: auto; padding: 6px 12px; font-size: 12px; }
+        button.edit { background: #4A90E2; }
+        button.delete { background: #FF6B6B; }
+        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+        th { background: #217B7F; color: white; padding: 8px 4px; text-align: left; font-weight: 600; }
+        td { padding: 10px 4px; border-bottom: 1px solid #EEE; }
+        tr:nth-child(even) { background: #F9F9F9; }
+        tr:hover { background: #F0F8F9; }
+        input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #217B7F; }
+        .chart-container { position: relative; height: 300px; margin-top: 12px; }
+        .actions { display: flex; gap: 4px; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
+        .modal-content { background-color: #fff; margin: 20px auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+        .modal-header { font-size: 18px; font-weight: 600; color: #217B7F; margin-bottom: 16px; }
+        .modal-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }
     </style>
 </head>
 <body>
-    <header>
-        <h1>📊 Peso Benny</h1>
-    </header>
-
+    <header><h1>📊 Peso Benny</h1></header>
     <div class="container">
-        <!-- Adicionar Peso -->
         <div class="section">
             <div class="section-title">➕ Adicionar Peso</div>
             <div class="full-width-controls">
-                <div>
-                    <label>Data (DD/MM/YYYY):</label>
-                    <input type="date" id="novaData">
-                </div>
-                <div>
-                    <label>Peso (g):</label>
-                    <input type="number" id="novoPeso" placeholder="ex: 4250" min="0">
-                </div>
-                <div>
-                    <label>Notas (opcional):</label>
-                    <input type="text" id="novasNotas" placeholder="ex: Ração adulto">
-                </div>
+                <div><label>Data (DD/MM/YYYY):</label><input type="date" id="novaData"></div>
+                <div><label>Peso (g):</label><input type="number" id="novoPeso" placeholder="ex: 4250" min="0"></div>
+                <div><label>Notas (opcional):</label><input type="text" id="novasNotas" placeholder="ex: Ração adulto"></div>
             </div>
             <button class="success" onclick="adicionarPeso()">➕ Adicionar Registro</button>
         </div>
-
-        <!-- Filtros -->
         <div class="section">
             <div class="section-title">🔍 Filtros</div>
             <div class="controls">
-                <div>
-                    <label>Data Início:</label>
-                    <input type="date" id="dataInicio" value="2025-09-01">
-                </div>
-                <div>
-                    <label>Data Fim:</label>
-                    <input type="date" id="dataFim" value="2025-11-26">
-                </div>
+                <div><label>Data Início:</label><input type="date" id="dataInicio" value="2025-09-01"></div>
+                <div><label>Data Fim:</label><input type="date" id="dataFim" value="2025-11-26"></div>
             </div>
             <div class="button-group">
                 <button onclick="atualizarGrafico()">Atualizar</button>
                 <button onclick="desmarcarTodas()" class="secondary">Desmarcar Tudo</button>
             </div>
         </div>
-
-        <!-- Gráfico Geral -->
         <div class="section">
             <div class="section-title">📈 Série Completa</div>
-            <div class="chart-container">
-                <canvas id="chartGeral"></canvas>
-            </div>
+            <div class="chart-container"><canvas id="chartGeral"></canvas></div>
         </div>
-
-        <!-- Gráfico Filtrado -->
         <div class="section">
             <div class="section-title">📉 Intervalo Selecionado</div>
-            <div class="chart-container">
-                <canvas id="chartFiltrado"></canvas>
-            </div>
+            <div class="chart-container"><canvas id="chartFiltrado"></canvas></div>
         </div>
-
-        <!-- Tabela -->
         <div class="section">
             <div class="section-title">📋 Dados</div>
             <button onclick="exportarCSV()" style="margin-bottom: 12px;">📥 Exportar CSV</button>
             <table>
-                <thead>
-                    <tr>
-                        <th>✓</th>
-                        <th>Data</th>
-                        <th>Peso (g)</th>
-                        <th>Notas</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>✓</th><th>Data</th><th>Peso (g)</th><th>Notas</th><th>Ações</th></tr></thead>
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
     </div>
-
-    <!-- Modal de Edição -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">✏️ Editar Registro</div>
             <div class="full-width-controls">
-                <div>
-                    <label>Data (DD/MM/YYYY):</label>
-                    <input type="date" id="editData">
-                </div>
-                <div>
-                    <label>Peso (g):</label>
-                    <input type="number" id="editPeso" min="0">
-                </div>
-                <div>
-                    <label>Notas:</label>
-                    <input type="text" id="editNotas">
-                </div>
+                <div><label>Data (DD/MM/YYYY):</label><input type="date" id="editData"></div>
+                <div><label>Peso (g):</label><input type="number" id="editPeso" min="0"></div>
+                <div><label>Notas:</label><input type="text" id="editNotas"></div>
             </div>
             <div class="modal-buttons">
                 <button onclick="salvarEdicao()" class="success">💾 Guardar</button>
@@ -371,7 +99,6 @@
             </div>
         </div>
     </div>
-
     <script>
         const DADOS_INICIAIS = [
             {date: "08/07/2024", weight: 0, notes: ""},
@@ -449,7 +176,7 @@
             {date: "15/09/2025", weight: 4562, notes: ""},
             {date: "16/09/2025", weight: 4556, notes: ""},
             {date: "17/09/2025", weight: 4561, notes: ""},
-            {date: "18/09/2025", weight: 4560, notes: "Ração pequeno; Vet."},
+            {date: "18/09/2025", weight: 4560, notes: "Ração pequeno"},
             {date: "19/09/2025", weight: 4558, notes: ""},
             {date: "20/09/2025", weight: 4550, notes: ""},
             {date: "21/09/2025", weight: 4530, notes: ""},
@@ -517,270 +244,24 @@
             {date: "25/11/2025", weight: 4240, notes: ""},
             {date: "26/11/2025", weight: 4190, notes: ""}
         ];
-
-        let dados = [];
-        let chartGeral = null;
-        let chartFiltrado = null;
-        let editandoIdx = -1;
-
-        function dateStringToDate(dateStr) {
-            const [d, m, y] = dateStr.split('/');
-            return new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
-        }
-
-        function dateToString(date) {
-            const d = String(date.getDate()).padStart(2, '0');
-            const m = String(date.getMonth() + 1).padStart(2, '0');
-            const y = date.getFullYear();
-            return `${d}/${m}/${y}`;
-        }
-
-        function carregarDados() {
-            const saved = localStorage.getItem('dados_benny');
-            dados = saved ? JSON.parse(saved) : [...DADOS_INICIAIS];
-            ordenarDados();
-            salvarDados();
-        }
-
-        function ordenarDados() {
-            dados.sort((a, b) => dateStringToDate(a.date) - dateStringToDate(b.date));
-        }
-
-        function salvarDados() {
-            localStorage.setItem('dados_benny', JSON.stringify(dados));
-        }
-
-        function adicionarPeso() {
-            const dataInput = document.getElementById('novaData').value;
-            const peso = parseInt(document.getElementById('novoPeso').value);
-            const notas = document.getElementById('novasNotas').value.trim();
-
-            if (!dataInput || !peso) {
-                alert('⚠️ Preencha a data e o peso!');
-                return;
-            }
-
-            const date = new Date(dataInput);
-            const dateStr = dateToString(date);
-
-            dados.push({ date: dateStr, weight: peso, notes: notas });
-            ordenarDados();
-            salvarDados();
-
-            document.getElementById('novaData').value = '';
-            document.getElementById('novoPeso').value = '';
-            document.getElementById('novasNotas').value = '';
-
-            carregarTabela();
-            atualizarGrafico();
-            alert('✅ Peso adicionado com sucesso!');
-        }
-
-        function abrirEditModal(idx) {
-            editandoIdx = idx;
-            const item = dados[idx];
-            const date = dateStringToDate(item.date);
-            document.getElementById('editData').value = date.toISOString().split('T')[0];
-            document.getElementById('editPeso').value = item.weight;
-            document.getElementById('editNotas').value = item.notes;
-            document.getElementById('editModal').style.display = 'block';
-        }
-
-        function fecharModal() {
-            document.getElementById('editModal').style.display = 'none';
-            editandoIdx = -1;
-        }
-
-        function salvarEdicao() {
-            const dataInput = document.getElementById('editData').value;
-            const peso = parseInt(document.getElementById('editPeso').value);
-            const notas = document.getElementById('editNotas').value.trim();
-
-            if (!dataInput || !peso) {
-                alert('⚠️ Preencha a data e o peso!');
-                return;
-            }
-
-            const date = new Date(dataInput);
-            const dateStr = dateToString(date);
-
-            dados[editandoIdx] = { date: dateStr, weight: peso, notes: notas };
-            ordenarDados();
-            salvarDados();
-
-            fecharModal();
-            carregarTabela();
-            atualizarGrafico();
-            alert('✅ Registro atualizado com sucesso!');
-        }
-
-        function apagarRegistro(idx) {
-            if (confirm('⚠️ Tem certeza que quer apagar este registro?')) {
-                dados.splice(idx, 1);
-                salvarDados();
-                carregarTabela();
-                atualizarGrafico();
-                alert('✅ Registro apagado!');
-            }
-        }
-
-        function carregarTabela() {
-            const tableBody = document.getElementById('tableBody');
-            tableBody.innerHTML = '';
-
-            dados.forEach((item, idx) => {
-                const row = document.createElement('tr');
-                const checked = localStorage.getItem(`marcado_${idx}`) ? 'checked' : '';
-                row.innerHTML = `
-                    <td><input type="checkbox" ${checked} onchange="toggleMarcado(${idx})"></td>
-                    <td>${item.date}</td>
-                    <td>${item.weight}</td>
-                    <td>${item.notes}</td>
-                    <td>
-                        <div class="actions">
-                            <button class="small edit" onclick="abrirEditModal(${idx})">✏️</button>
-                            <button class="small delete" onclick="apagarRegistro(${idx})">🗑️</button>
-                        </div>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-
-        function toggleMarcado(idx) {
-            if (localStorage.getItem(`marcado_${idx}`)) {
-                localStorage.removeItem(`marcado_${idx}`);
-            } else {
-                localStorage.setItem(`marcado_${idx}`, 'true');
-            }
-            atualizarGrafico();
-        }
-
-        function desmarcarTodas() {
-            for (let i = 0; i < dados.length; i++) {
-                localStorage.removeItem(`marcado_${i}`);
-            }
-            carregarTabela();
-            atualizarGrafico();
-        }
-
-        function atualizarGrafico() {
-            const labels = dados.map(d => d.date);
-            const weights = dados.map(d => d.weight);
-
-            if (chartGeral) chartGeral.destroy();
-            chartGeral = new Chart(document.getElementById('chartGeral'), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Peso (g)',
-                        data: weights,
-                        borderColor: '#217B7F',
-                        backgroundColor: 'rgba(33, 123, 127, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        pointRadius: 3,
-                        pointHoverRadius: 5,
-                        pointBackgroundColor: '#217B7F'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: true } },
-                    scales: { y: { beginAtZero: false } }
-                }
-            });
-
-            const dataInicio = new Date(document.getElementById('dataInicio').value);
-            const dataFim = new Date(document.getElementById('dataFim').value);
-
-            const filtrado = dados.filter(d => {
-                const data = dateStringToDate(d.date);
-                return data >= dataInicio && data <= dataFim;
-            });
-
-            const labelsFilt = filtrado.map(d => d.date);
-            const weightsFilt = filtrado.map(d => d.weight);
-
-            const marcados = [];
-            dados.forEach((item, idx) => {
-                if (localStorage.getItem(`marcado_${idx}`)) {
-                    const data = dateStringToDate(item.date);
-                    if (data >= dataInicio && data <= dataFim) {
-                        marcados.push({ date: item.date, weight: item.weight });
-                    }
-                }
-            });
-
-            if (chartFiltrado) chartFiltrado.destroy();
-
-            const datasets = [{
-                label: 'Peso (g)',
-                data: weightsFilt,
-                borderColor: '#FF6B6B',
-                backgroundColor: 'rgba(255, 107, 107, 0.1)',
-                borderWidth: 2,
-                tension: 0.3,
-                pointRadius: 3,
-                pointHoverRadius: 5,
-                pointBackgroundColor: '#FF6B6B'
-            }];
-
-            if (marcados.length > 0) {
-                datasets.push({
-                    label: 'Marcados',
-                    data: marcados.map(m => m.weight),
-                    borderColor: '#FFD700',
-                    backgroundColor: '#FFD700',
-                    showLine: false,
-                    pointRadius: 6,
-                    pointHoverRadius: 8,
-                    pointBorderColor: '#217B7F',
-                    pointBorderWidth: 2
-                });
-            }
-
-            chartFiltrado = new Chart(document.getElementById('chartFiltrado'), {
-                type: 'line',
-                data: { labels: labelsFilt, datasets: datasets },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: true },
-                        tooltip: { callbacks: { label: (context) => context.dataset.label + ': ' + context.parsed.y + 'g' } }
-                    },
-                    scales: { y: { beginAtZero: false } }
-                }
-            });
-        }
-
-        function exportarCSV() {
-            let csv = 'Data,Peso (g),Notas\n';
-            dados.forEach(item => {
-                csv += `"${item.date}","${item.weight}","${item.notes}"\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'Benny_Pesos_Export.csv';
-            link.click();
-        }
-
-        window.onclick = function(event) {
-            const modal = document.getElementById('editModal');
-            if (event.target == modal) fecharModal();
-        }
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW:', err));
-        }
-
-        carregarDados();
-        carregarTabela();
-        atualizarGrafico();
+        let dados = [], chartGeral = null, chartFiltrado = null, editandoIdx = -1;
+        function dateStringToDate(dateStr) { const [d,m,y]=dateStr.split('/'); return new Date(parseInt(y),parseInt(m)-1,parseInt(d)); }
+        function dateToString(date) { const d=String(date.getDate()).padStart(2,'0'); const m=String(date.getMonth()+1).padStart(2,'0'); const y=date.getFullYear(); return `${d}/${m}/${y}`; }
+        function carregarDados() { const saved=localStorage.getItem('dados_benny'); dados=saved?JSON.parse(saved):[...DADOS_INICIAIS]; salvarDados(); }
+        function salvarDados() { localStorage.setItem('dados_benny',JSON.stringify(dados)); }
+        function adicionarPeso() { const dataInput=document.getElementById('novaData').value; const peso=parseInt(document.getElementById('novoPeso').value); const notas=document.getElementById('novasNotas').value.trim(); if(!dataInput||!peso){alert('⚠️ Preencha a data e o peso!');return;} const date=new Date(dataInput); const dateStr=dateToString(date); dados.push({date:dateStr,weight:peso,notes:notas}); dados.sort((a,b)=>dateStringToDate(a.date)-dateStringToDate(b.date)); salvarDados(); document.getElementById('novaData').value=''; document.getElementById('novoPeso').value=''; document.getElementById('novasNotas').value=''; carregarTabela(); atualizarGrafico(); alert('✅ Peso adicionado com sucesso!'); }
+        function abrirEditModal(idx) { editandoIdx=idx; const item=dados[idx]; const date=dateStringToDate(item.date); document.getElementById('editData').value=date.toISOString().split('T')[0]; document.getElementById('editPeso').value=item.weight; document.getElementById('editNotas').value=item.notes; document.getElementById('editModal').style.display='block'; }
+        function fecharModal() { document.getElementById('editModal').style.display='none'; editandoIdx=-1; }
+        function salvarEdicao() { const dataInput=document.getElementById('editData').value; const peso=parseInt(document.getElementById('editPeso').value); const notas=document.getElementById('editNotas').value.trim(); if(!dataInput||!peso){alert('⚠️ Preencha a data e o peso!');return;} const date=new Date(dataInput); const dateStr=dateToString(date); dados[editandoIdx]={date:dateStr,weight:peso,notes:notas}; dados.sort((a,b)=>dateStringToDate(a.date)-dateStringToDate(b.date)); salvarDados(); fecharModal(); carregarTabela(); atualizarGrafico(); alert('✅ Registro atualizado com sucesso!'); }
+        function apagarRegistro(idx) { if(confirm('⚠️ Tem certeza que quer apagar este registro?')){ dados.splice(idx,1); salvarDados(); carregarTabela(); atualizarGrafico(); alert('✅ Registro apagado!'); } }
+        function carregarTabela() { const tableBody=document.getElementById('tableBody'); tableBody.innerHTML=''; dados.forEach((item,idx)=>{ const row=document.createElement('tr'); const checked=localStorage.getItem(`marcado_${idx}`)?'checked':''; row.innerHTML=`<td><input type="checkbox" ${checked} onchange="toggleMarcado(${idx})"></td><td>${item.date}</td><td>${item.weight}</td><td>${item.notes}</td><td><div class="actions"><button class="small edit" onclick="abrirEditModal(${idx})">✏️</button><button class="small delete" onclick="apagarRegistro(${idx})">🗑️</button></div></td>`; tableBody.appendChild(row); }); }
+        function toggleMarcado(idx) { if(localStorage.getItem(`marcado_${idx}`)){localStorage.removeItem(`marcado_${idx}`);}else{localStorage.setItem(`marcado_${idx}`,'true');} atualizarGrafico(); }
+        function desmarcarTodas() { for(let i=0;i<dados.length;i++){localStorage.removeItem(`marcado_${i}`);} carregarTabela(); atualizarGrafico(); }
+        function atualizarGrafico() { const labels=dados.map(d=>d.date); const weights=dados.map(d=>d.weight); if(chartGeral)chartGeral.destroy(); chartGeral=new Chart(document.getElementById('chartGeral'),{type:'line',data:{labels:labels,datasets:[{label:'Peso (g)',data:weights,borderColor:'#217B7F',backgroundColor:'rgba(33, 123, 127, 0.1)',borderWidth:2,tension:0.3,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#217B7F'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true}},scales:{y:{beginAtZero:false}}}}); const dataInicio=new Date(document.getElementById('dataInicio').value); const dataFim=new Date(document.getElementById('dataFim').value); const filtrado=dados.filter(d=>{const data=dateStringToDate(d.date); return data>=dataInicio&&data<=dataFim;}); const labelsFilt=filtrado.map(d=>d.date); const weightsFilt=filtrado.map(d=>d.weight); const marcados=[]; dados.forEach((item,idx)=>{if(localStorage.getItem(`marcado_${idx}`)){const data=dateStringToDate(item.date); if(data>=dataInicio&&data<=dataFim){marcados.push({date:item.date,weight:item.weight});}}; }); if(chartFiltrado)chartFiltrado.destroy(); const datasets=[{label:'Peso (g)',data:weightsFilt,borderColor:'#FF6B6B',backgroundColor:'rgba(255, 107, 107, 0.1)',borderWidth:2,tension:0.3,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#FF6B6B'}]; if(marcados.length>0){datasets.push({label:'Marcados',data:marcados.map(m=>m.weight),borderColor:'#FFD700',backgroundColor:'#FFD700',showLine:false,pointRadius:6,pointHoverRadius:8,pointBorderColor:'#217B7F',pointBorderWidth:2});} chartFiltrado=new Chart(document.getElementById('chartFiltrado'),{type:'line',data:{labels:labelsFilt,datasets:datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true},tooltip:{callbacks:{label:(context)=>context.dataset.label+': '+context.parsed.y+'g'}}},scales:{y:{beginAtZero:false}}}}); }
+        function exportarCSV() { let csv='Data,Peso (g),Notas\n'; dados.forEach(item=>{csv+=`"${item.date}","${item.weight}","${item.notes}"\n`;}); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download='Benny_Pesos_Export.csv'; link.click(); }
+        window.onclick=function(event){const modal=document.getElementById('editModal'); if(event.target==modal)fecharModal();}
+        if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').catch(err=>console.log('SW:',err));}
+        carregarDados(); carregarTabela(); atualizarGrafico();
     </script>
 </body>
 </html>
