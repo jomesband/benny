@@ -7,6 +7,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Peso Benny">
     <meta name="theme-color" content="#217B7F">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Peso Benny</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <style>
@@ -261,6 +264,19 @@
         function exportarCSV() { let csv='Data,Peso (g),Notas\n'; dados.forEach(item=>{csv+=`"${item.date}","${item.weight}","${item.notes}"\n`;}); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download='Benny_Pesos_Export.csv'; link.click(); }
         window.onclick=function(event){const modal=document.getElementById('editModal'); if(event.target==modal)fecharModal();}
         if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').catch(err=>console.log('SW:',err));}
+
+        // VERIFICAR ATUALIZAÇÕES
+        window.addEventListener('load', () => {
+            fetch(window.location.href, {cache: 'no-store'})
+                .then(response => response.text())
+                .then(html => {
+                    if(!document.body.innerHTML.includes(DADOS_INICIAIS[0].notes)){
+                        location.reload(true);
+                    }
+                })
+                .catch(err => console.log('Update check:', err));
+        });
+
         carregarDados(); carregarTabela(); atualizarGrafico();
     </script>
 </body>
