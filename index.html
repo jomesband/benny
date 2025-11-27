@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Peso Benny">
+    <meta name="theme-color" content="#217B7F">
+    <meta name="description" content="Rastreador de peso do Benny com gráficos e filtros">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23217B7F' width='192' height='192'/><text x='50%' y='50%' font-size='80' fill='white' text-anchor='middle' dy='.3em' font-weight='bold'>B</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%23217B7F' width='180' height='180' rx='40'/><text x='90' y='90' font-size='80' fill='white' text-anchor='middle' dy='.3em' font-weight='bold'>B</text></svg>">
+    <title>Peso Benny</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #333;
+            padding-top: constant(safe-area-inset-top);
+            padding-top: env(safe-area-inset-top);
+        }
+
+        header {
+            background: #217B7F;
+            color: white;
+            padding: 16px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding-top: max(16px, env(safe-area-inset-top));
+        }
+
+        header h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 16px;
+            padding-bottom: 32px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #217B7F;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .full-width-controls {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        label {
+            font-size: 12px;
+            color: #666;
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        input[type="date"], input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #DDD;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #F9F9F9;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px 16px;
+            background: #217B7F;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-appearance: none;
+        }
+
+        button:active {
+            background: #1A5F65;
+            transform: scale(0.98);
+        }
+
+        button.secondary {
+            background: #FF6B6B;
+        }
+
+        button.secondary:active {
+            background: #E85555;
+        }
+
+        button.success {
+            background: #51CF66;
+        }
+
+        button.success:active {
+            background: #40C057;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        th {
+            background: #217B7F;
+            color: white;
+            padding: 8px 4px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 10px 4px;
+            border-bottom: 1px solid #EEE;
+        }
+
+        tr:nth-child(even) {
+            background: #F9F9F9;
+        }
+
+        tr:hover {
+            background: #F0F8F9;
+        }
+
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #217B7F;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 400px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            td, th {
+                padding: 6px 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📊 Peso Benny</h1>
+    </header>
+
+    <div class="container">
+        <!-- Adicionar Peso -->
+        <div class="section">
+            <div class="section-title">➕ Adicionar Peso</div>
+            <div class="full-width-controls">
+                <div>
+                    <label>Data (DD/MM/YYYY):</label>
+                    <input type="date" id="novaData">
+                </div>
+                <div>
+                    <label>Peso (g):</label>
+                    <input type="number" id="novoPeso" placeholder="ex: 4250" min="0">
+                </div>
+                <div>
+                    <label>Notas (opcional):</label>
+                    <input type="text" id="novasNotas" placeholder="ex: Ração adulto">
+                </div>
+            </div>
+            <button class="success" onclick="adicionarPeso()">➕ Adicionar Registro</button>
+        </div>
+
+        <!-- Filtros -->
+        <div class="section">
+            <div class="section-title">🔍 Filtros</div>
+            <div class="controls">
+                <div>
+                    <label>Data Início:</label>
+                    <input type="date" id="dataInicio" value="2025-09-01">
+                </div>
+                <div>
+                    <label>Data Fim:</label>
+                    <input type="date" id="dataFim" value="2025-10-31">
+                </div>
+            </div>
+            <div class="button-group">
+                <button onclick="atualizarGrafico()">Atualizar</button>
+                <button onclick="desmarcarTodas()" class="secondary">Desmarcar Tudo</button>
+            </div>
+        </div>
+
+        <!-- Gráfico Geral -->
+        <div class="section">
+            <div class="section-title">📈 Série Completa</div>
+            <div class="chart-container">
+                <canvas id="chartGeral"></canvas>
+            </div>
+        </div>
+
+        <!-- Gráfico Filtrado -->
+        <div class="section">
+            <div class="section-title">📉 Intervalo Selecionado</div>
+            <div class="chart-container">
+                <canvas id="chartFiltrado"></canvas>
+            </div>
+        </div>
+
+        <!-- Tabela -->
+        <div class="section">
+            <div class="section-title">📋 Dados</div>
+            <button onclick="exportarCSV()" style="margin-bottom: 12px;">📥 Exportar CSV</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>✓</th>
+                        <th>Data</th>
+                        <th>Peso (g)</th>
+                        <th>Notas</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const DADOS_INICIAIS = [
+            {date: "7/8/2024", weight: 0, notes: ""},
+            {date: "9/2/2024", weight: 1000, notes: "Ração pequeno"},
+            {date: "9/10/2024", weight: 1220, notes: ""},
+            {date: "10/2/2024", weight: 1610, notes: ""},
+            {date: "10/30/2024", weight: 2330, notes: ""},
+            {date: "1/16/2025", weight: 4250, notes: ""},
+            {date: "2/25/2025", weight: 4590, notes: ""},
+            {date: "3/5/2025", weight: 4540, notes: "Ração adulto"},
+            {date: "5/15/2025", weight: 4150, notes: ""},
+            {date: "5/17/2025", weight: 4213, notes: "Ração pequeno"},
+            {date: "5/18/2025", weight: 4213, notes: ""},
+            {date: "5/19/2025", weight: 4235, notes: ""},
+            {date: "5/20/2025", weight: 4225, notes: ""},
+            {date: "5/21/2025", weight: 4222, notes: ""},
+            {date: "5/22/2025", weight: 4268, notes: ""},
+            {date: "5/23/2025", weight: 4236, notes: ""},
+            {date: "5/24/2025", weight: 4245, notes: ""},
+            {date: "5/25/2025", weight: 4243, notes: ""},
+            {date: "5/26/2025", weight: 4225, notes: ""},
+            {date: "5/27/2025", weight: 4247, notes: ""},
+            {date: "5/28/2025", weight: 4268, notes: ""},
+            {date: "5/29/2025", weight: 4270, notes: ""},
+            {date: "5/31/2025", weight: 4312, notes: ""},
+            {date: "6/1/2025", weight: 4299, notes: ""},
+            {date: "6/2/2025", weight: 4312, notes: ""},
+            {date: "6/3/2025", weight: 4369, notes: ""},
+            {date: "6/4/2025", weight: 4383, notes: ""},
+            {date: "6/6/2025", weight: 4400, notes: ""},
+            {date: "6/7/2025", weight: 4425, notes: ""},
+            {date: "6/8/2025", weight: 4423, notes: ""},
+            {date: "6/10/2025", weight: 4466, notes: ""},
+            {date: "6/12/2025", weight: 4498, notes: ""},
+            {date: "6/13/2025", weight: 4476, notes: ""},
+            {date: "6/14/2025", weight: 4470, notes: ""},
+            {date: "6/15/2025", weight: 4518, notes: ""},
+            {date: "6/18/2025", weight: 4593, notes: ""},
+            {date: "6/19/2025", weight: 4639, notes: ""},
+            {date: "6/21/2025", weight: 4623, notes: ""},
+            {date: "6/22/2025", weight: 4639, notes: ""},
+            {date: "6/23/2025", weight: 4664, notes: ""},
+            {date: "6/25/2025", weight: 4663, notes: ""},
+            {date: "6/27/2025", weight: 4727, notes: ""},
+            {date: "6/30/2025", weight: 4781, notes: ""},
+            {date: "7/9/2025", weight: 4780, notes: ""},
+            {date: "7/10/2025", weight: 4830, notes: ""},
+            {date: "7/12/2025", weight: 4832, notes: ""},
+            {date: "7/16/2025", weight: 4896, notes: ""},
+            {date: "7/26/2025", weight: 4994, notes: ""},
+            {date: "7/28/2025", weight: 5014, notes: ""},
+            {date: "7/30/2025", weight: 4996, notes: ""},
+            {date: "8/3/2025", weight: 4954, notes: ""},
+            {date: "8/4/2025", weight: 4953, notes: ""},
+            {date: "8/7/2025", weight: 4928, notes: ""},
+            {date: "8/10/2025", weight: 4962, notes: ""},
+            {date: "8/14/2025", weight: 4941, notes: ""},
+            {date: "8/23/2025", weight: 4930, notes: "Ração adulto"},
+            {date: "8/25/2025", weight: 4884, notes: ""},
+            {date: "8/26/2025", weight: 4838, notes: ""},
+            {date: "8/27/2025", weight: 4824, notes: ""},
+            {date: "8/28/2025", weight: 4793, notes: ""},
+            {date: "8/29/2025", weight: 4798, notes: ""},
+            {date: "8/30/2025", weight: 4775, notes: ""},
+            {date: "9/2/2025", weight: 4755, notes: ""},
+            {date: "9/5/2025", weight: 4802, notes: ""},
+            {date: "9/6/2025", weight: 4676, notes: ""},
+            {date: "9/7/2025", weight: 4656, notes: ""},
+            {date: "9/9/2025", weight: 4619, notes: ""},
+            {date: "9/10/2025", weight: 4642, notes: ""},
+            {date: "9/11/2025", weight: 4610, notes: ""},
+            {date: "9/12/2025", weight: 4620, notes: ""},
+            {date: "9/13/2025", weight: 4582, notes: ""},
+            {date: "9/14/2025", weight: 4538, notes: ""},
+            {date: "9/15/2025", weight: 4562, notes: ""},
+            {date: "9/16/2025", weight: 4556, notes: ""},
+            {date: "9/17/2025", weight: 4561, notes: ""},
+            {date: "9/18/2025", weight: 4560, notes: "Ração pequeno; Vet."},
+            {date: "9/19/2025", weight: 4558, notes: ""},
+            {date: "9/20/2025", weight: 4550, notes: ""},
+            {date: "9/21/2025", weight: 4530, notes: ""},
+            {date: "9/22/2025", weight: 4536, notes: ""},
+            {date: "9/25/2025", weight: 4501, notes: ""},
+            {date: "9/26/2025", weight: 4508, notes: ""},
+            {date: "9/27/2025", weight: 4523, notes: ""},
+            {date: "9/28/2025", weight: 4536, notes: ""},
+            {date: "9/29/2025", weight: 4521, notes: ""},
+            {date: "9/30/2025", weight: 4500, notes: ""},
+            {date: "10/1/2025", weight: 4495, notes: ""},
+            {date: "10/2/2025", weight: 4506, notes: ""},
+            {date: "10/3/2025", weight: 4475, notes: ""},
+            {date: "10/4/2025", weight: 4466, notes: ""},
+            {date: "10/5/2025", weight: 4475, notes: ""},
+            {date: "10/6/2025", weight: 4475, notes: ""},
+            {date: "10/7/2025", weight: 4444, notes: ""},
+            {date: "10/8/2025", weight: 4420, notes: ""},
+            {date: "10/9/2025", weight: 4418, notes: ""},
+            {date: "10/10/2025", weight: 4400, notes: ""},
+            {date: "10/11/2025", weight: 4419, notes: ""},
+            {date: "10/12/2025", weight: 4388, notes: ""},
+            {date: "10/13/2025", weight: 4377, notes: ""},
+            {date: "10/14/2025", weight: 4383, notes: ""},
+            {date: "10/15/2025", weight: 4377, notes: ""},
+            {date: "10/16/2025", weight: 4346, notes: ""},
+            {date: "10/17/2025", weight: 4334, notes: "Vet.; Análises"},
+            {date: "10/18/2025", weight: 4328, notes: ""},
+            {date: "10/19/2025", weight: 4310, notes: ""},
+            {date: "10/20/2025", weight: 4297, notes: ""},
+            {date: "10/21/2025", weight: 4302, notes: ""},
+            {date: "10/22/2025", weight: 4290, notes: ""},
+            {date: "10/23/2025", weight: 4303, notes: ""},
+            {date: "10/24/2025", weight: 4313, notes: ""},
+            {date: "10/25/2025", weight: 4323, notes: ""},
+            {date: "10/26/2025", weight: 4338, notes: ""},
+            {date: "10/27/2025", weight: 4300, notes: ""},
+            {date: "10/28/2025", weight: 4272, notes: ""},
+            {date: "10/29/2025", weight: 4281, notes: ""},
+            {date: "10/30/2025", weight: 4273, notes: ""},
+            {date: "10/31/2025", weight: 4298, notes: ""},
+            {date: "11/1/2025", weight: 4268, notes: ""},
+            {date: "11/2/2025", weight: 4265, notes: ""},
+            {date: "11/3/2025", weight: 4262, notes: ""},
+            {date: "11/4/2025", weight: 4263, notes: ""},
+            {date: "11/5/2025", weight: 4281, notes: "Ração adulto"},
+            {date: "11/6/2025", weight: 4301, notes: ""},
+            {date: "11/7/2025", weight: 4264, notes: ""},
+            {date: "11/8/2025", weight: 4274, notes: ""},
+            {date: "11/9/2025", weight: 4267, notes: ""},
+            {date: "11/10/2025", weight: 4262, notes: ""},
+            {date: "11/11/2025", weight: 4245, notes: ""},
+            {date: "11/12/2025", weight: 4254, notes: ""},
+            {date: "11/13/2025", weight: 4268, notes: ""},
+            {date: "11/14/2025", weight: 4253, notes: ""},
+            {date: "11/15/2025", weight: 4277, notes: ""},
+            {date: "11/16/2025", weight: 4254, notes: ""},
+            {date: "11/17/2025", weight: 4253, notes: ""},
+            {date: "11/18/2025", weight: 4221, notes: ""},
+            {date: "11/19/2025", weight: 4225, notes: ""},
+            {date: "11/20/2025", weight: 4245, notes: ""},
+            {date: "11/21/2025", weight: 4245, notes: ""},
+            {date: "11/23/2025", weight: 4256, notes: ""},
+            {date: "11/24/2025", weight: 4239, notes: ""},
+            {date: "11/25/2025", weight: 4240, notes: ""},
+            {date: "11/26/2025", weight: 4190, notes: ""}
+        ];
+
+        let dados = [];
+        let chartGeral = null;
+        let chartFiltrado = null;
+
+        function carregarDados() {
+            const saved = localStorage.getItem('dados_benny');
+            dados = saved ? JSON.parse(saved) : [...DADOS_INICIAIS];
+            salvarDados();
+        }
+
+        function salvarDados() {
+            localStorage.setItem('dados_benny', JSON.stringify(dados));
+        }
+
+        function parseDate(dateStr) {
+            const [d, m, y] = dateStr.split('/');
+            return new Date(y, m - 1, d);
+        }
+
+        function formatDateDDMMYY(date) {
+            const d = String(date.getDate()).padStart(2, '0');
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const y = String(date.getFullYear()).slice(-2);
+            return `${d}/${m}/${y}`;
+        }
+
+        function adicionarPeso() {
+            const dataInput = document.getElementById('novaData').value;
+            const peso = parseInt(document.getElementById('novoPeso').value);
+            const notas = document.getElementById('novasNotas').value.trim();
+
+            if (!dataInput || !peso) {
+                alert('⚠️ Preencha a data e o peso!');
+                return;
+            }
+
+            const date = new Date(dataInput);
+            const dateStr = formatDateDDMMYY(date);
+
+            dados.push({ date: dateStr, weight: peso, notes: notas });
+            dados.sort((a, b) => parseDate(a.date) - parseDate(b.date));
+            salvarDados();
+
+            document.getElementById('novaData').value = '';
+            document.getElementById('novoPeso').value = '';
+            document.getElementById('novasNotas').value = '';
+
+            carregarTabela();
+            atualizarGrafico();
+            alert('✅ Peso adicionado com sucesso!');
+        }
+
+        function carregarTabela() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            dados.forEach((item, idx) => {
+                const row = document.createElement('tr');
+                const checked = localStorage.getItem(`marcado_${idx}`) ? 'checked' : '';
+                row.innerHTML = `
+                    <td><input type="checkbox" ${checked} onchange="toggleMarcado(${idx})"></td>
+                    <td>${item.date}</td>
+                    <td>${item.weight}</td>
+                    <td>${item.notes}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function toggleMarcado(idx) {
+            if (localStorage.getItem(`marcado_${idx}`)) {
+                localStorage.removeItem(`marcado_${idx}`);
+            } else {
+                localStorage.setItem(`marcado_${idx}`, 'true');
+            }
+            atualizarGrafico();
+        }
+
+        function desmarcarTodas() {
+            for (let i = 0; i < dados.length; i++) {
+                localStorage.removeItem(`marcado_${i}`);
+            }
+            carregarTabela();
+            atualizarGrafico();
+        }
+
+        function atualizarGrafico() {
+            const labels = dados.map(d => d.date);
+            const weights = dados.map(d => d.weight);
+
+            if (chartGeral) chartGeral.destroy();
+            chartGeral = new Chart(document.getElementById('chartGeral'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Peso (g)',
+                        data: weights,
+                        borderColor: '#217B7F',
+                        backgroundColor: 'rgba(33, 123, 127, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
+                        pointBackgroundColor: '#217B7F'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        y: { beginAtZero: false }
+                    }
+                }
+            });
+
+            const inicio = new Date(document.getElementById('dataInicio').value);
+            const fim = new Date(document.getElementById('dataFim').value);
+
+            const filtrado = dados.filter(d => {
+                const data = parseDate(d.date);
+                return data >= inicio && data <= fim;
+            });
+
+            const labelsFilt = filtrado.map(d => d.date);
+            const weightsFilt = filtrado.map(d => d.weight);
+
+            const marcados = [];
+            dados.forEach((item, idx) => {
+                if (localStorage.getItem(`marcado_${idx}`)) {
+                    const data = parseDate(item.date);
+                    if (data >= inicio && data <= fim) {
+                        marcados.push({ date: item.date, weight: item.weight });
+                    }
+                }
+            });
+
+            if (chartFiltrado) chartFiltrado.destroy();
+
+            const datasets = [{
+                label: 'Peso (g)',
+                data: weightsFilt,
+                borderColor: '#FF6B6B',
+                backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                borderWidth: 2,
+                tension: 0.3,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+                pointBackgroundColor: '#FF6B6B'
+            }];
+
+            if (marcados.length > 0) {
+                datasets.push({
+                    label: 'Marcados',
+                    data: marcados.map(m => m.weight),
+                    borderColor: '#FFD700',
+                    backgroundColor: '#FFD700',
+                    showLine: false,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointBorderColor: '#217B7F',
+                    pointBorderWidth: 2
+                });
+            }
+
+            chartFiltrado = new Chart(document.getElementById('chartFiltrado'), {
+                type: 'line',
+                data: {
+                    labels: labelsFilt,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + 'g';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: false }
+                    }
+                }
+            });
+        }
+
+        function exportarCSV() {
+            let csv = 'Data,Peso (g),Notas\n';
+            dados.forEach(item => {
+                csv += `"${item.date}","${item.weight}","${item.notes}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Benny_Pesos_Export.csv';
+            link.click();
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW:', err));
+        }
+
+        carregarDados();
+        carregarTabela();
+        atualizarGrafico();
+    </script>
+</body>
+</html>
