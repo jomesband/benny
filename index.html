@@ -261,15 +261,9 @@
         function carregarTabela() { const tableBody=document.getElementById('tableBody'); tableBody.innerHTML=''; dados.forEach((item,idx)=>{ const row=document.createElement('tr'); const checked=localStorage.getItem(`marcado_${idx}`)?'checked':''; row.innerHTML=`<td><input type="checkbox" ${checked} onchange="toggleMarcado(${idx})"></td><td>${item.date}</td><td>${item.weight}</td><td>${item.notes}</td><td><div class="actions"><button class="small edit" onclick="abrirEditModal(${idx})">✏️</button><button class="small delete" onclick="apagarRegistro(${idx})">🗑️</button></div></td>`; tableBody.appendChild(row); }); }
         function toggleMarcado(idx) { if(localStorage.getItem(`marcado_${idx}`)){localStorage.removeItem(`marcado_${idx}`);}else{localStorage.setItem(`marcado_${idx}`,'true');} atualizarGrafico(); }
         function desmarcarTodas() { for(let i=0;i<dados.length;i++){localStorage.removeItem(`marcado_${i}`);} carregarTabela(); atualizarGrafico(); }
-
+        
         function atualizarGrafico() {
-            // Converter dados para formato de escala de tempo
-            const datasetGeral = dados.map(d => ({
-                x: dateStringToDate(d.date),
-                y: d.weight,
-                dateStr: d.date
-            }));
-
+            const datasetGeral = dados.map(d => ({x: dateStringToDate(d.date), y: d.weight, dateStr: d.date}));
             if(chartGeral) chartGeral.destroy();
             chartGeral = new Chart(document.getElementById('chartGeral'), {
                 type: 'scatter',
@@ -291,160 +285,50 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
+                    interaction: {intersect: false, mode: 'index'},
                     plugins: {
                         legend: {display: true},
-                        tooltip: {
-                            callbacks: {
-                                label: (context) => {
-                                    const dataPoint = datasetGeral[context.dataIndex];
-                                    return 'Data: ' + dataPoint.dateStr + ' | Peso: ' + dataPoint.y + 'g';
-                                }
-                            }
-                        }
+                        tooltip: {callbacks: {label: (context) => {const dataPoint = datasetGeral[context.dataIndex]; return 'Data: ' + dataPoint.dateStr + ' | Peso: ' + dataPoint.y + 'g';}}}
                     },
                     scales: {
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'day',
-                                displayFormats: {
-                                    day: 'dd/MM/yyyy'
-                                }
-                            },
-                            title: {
-                                display: true,
-                                text: 'Data'
-                            }
-                        },
-                        y: {
-                            beginAtZero: false,
-                            title: {
-                                display: true,
-                                text: 'Peso (g)'
-                            }
-                        }
+                        x: {type: 'time', time: {unit: 'day', displayFormats: {day: 'dd/MM/yyyy'}}, title: {display: true, text: 'Data'}},
+                        y: {beginAtZero: false, title: {display: true, text: 'Peso (g)'}}
                     }
                 }
             });
-
-            // Gráfico filtrado
+            
             const dataInicio = new Date(document.getElementById('dataInicio').value);
             const dataFim = new Date(document.getElementById('dataFim').value);
-
-            const filtrado = dados.filter(d => {
-                const data = dateStringToDate(d.date);
-                return data >= dataInicio && data <= dataFim;
-            });
-
-            const datasetFiltrado = filtrado.map(d => ({
-                x: dateStringToDate(d.date),
-                y: d.weight,
-                dateStr: d.date
-            }));
-
+            const filtrado = dados.filter(d => {const data = dateStringToDate(d.date); return data >= dataInicio && data <= dataFim;});
+            const datasetFiltrado = filtrado.map(d => ({x: dateStringToDate(d.date), y: d.weight, dateStr: d.date}));
             const marcados = [];
-            dados.forEach((item, idx) => {
-                if(localStorage.getItem(`marcado_${idx}`)) {
-                    const data = dateStringToDate(item.date);
-                    if(data >= dataInicio && data <= dataFim) {
-                        marcados.push({x: data, y: item.weight, dateStr: item.date});
-                    }
-                }
-            });
-
+            dados.forEach((item, idx) => {if(localStorage.getItem(`marcado_${idx}`)) {const data = dateStringToDate(item.date); if(data >= dataInicio && data <= dataFim) {marcados.push({x: data, y: item.weight, dateStr: item.date});}}});
             if(chartFiltrado) chartFiltrado.destroy();
-
-            const datasets2 = [{
-                label: 'Peso (g)',
-                data: datasetFiltrado,
-                borderColor: '#FF6B6B',
-                backgroundColor: 'rgba(255, 107, 107, 0.5)',
-                borderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                pointBackgroundColor: '#FF6B6B',
-                showLine: true,
-                tension: 0.3,
-                fill: false
-            }];
-
-            if(marcados.length > 0) {
-                datasets2.push({
-                    label: 'Marcados',
-                    data: marcados,
-                    borderColor: '#FFD700',
-                    backgroundColor: '#FFD700',
-                    showLine: false,
-                    pointRadius: 6,
-                    pointHoverRadius: 8,
-                    pointBorderColor: '#217B7F',
-                    pointBorderWidth: 2,
-                    type: 'scatter'
-                });
-            }
-
+            const datasets2 = [{label: 'Peso (g)', data: datasetFiltrado, borderColor: '#FF6B6B', backgroundColor: 'rgba(255, 107, 107, 0.5)', borderWidth: 2, pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: '#FF6B6B', showLine: true, tension: 0.3, fill: false}];
+            if(marcados.length > 0) {datasets2.push({label: 'Marcados', data: marcados, borderColor: '#FFD700', backgroundColor: '#FFD700', showLine: false, pointRadius: 6, pointHoverRadius: 8, pointBorderColor: '#217B7F', pointBorderWidth: 2, type: 'scatter'});}
             chartFiltrado = new Chart(document.getElementById('chartFiltrado'), {
                 type: 'scatter',
                 data: { datasets: datasets2 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
+                    interaction: {intersect: false, mode: 'index'},
                     plugins: {
                         legend: {display: true},
-                        tooltip: {
-                            callbacks: {
-                                label: (context) => {
-                                    const allData = [...datasetFiltrado, ...marcados];
-                                    const dataPoint = allData[context.dataIndex];
-                                    return 'Data: ' + dataPoint.dateStr + ' | Peso: ' + dataPoint.y + 'g';
-                                }
-                            }
-                        }
+                        tooltip: {callbacks: {label: (context) => {const allData = [...datasetFiltrado, ...marcados]; const dataPoint = allData[context.dataIndex]; return 'Data: ' + dataPoint.dateStr + ' | Peso: ' + dataPoint.y + 'g';}}}
                     },
                     scales: {
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'day',
-                                displayFormats: {
-                                    day: 'dd/MM/yyyy'
-                                }
-                            },
-                            title: {
-                                display: true,
-                                text: 'Data'
-                            }
-                        },
-                        y: {
-                            beginAtZero: false,
-                            title: {
-                                display: true,
-                                text: 'Peso (g)'
-                            }
-                        }
+                        x: {type: 'time', time: {unit: 'day', displayFormats: {day: 'dd/MM/yyyy'}}, title: {display: true, text: 'Data'}},
+                        y: {beginAtZero: false, title: {display: true, text: 'Peso (g)'}}
                     }
                 }
             });
         }
-
+        
         function exportarCSV() { let csv='Data,Peso (g),Notas\n'; dados.forEach(item=>{csv+=`"${item.date}","${item.weight}","${item.notes}"\n`;}); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download='Benny_Pesos_Export.csv'; link.click(); }
         window.onclick=function(event){const modal=document.getElementById('editModal'); if(event.target==modal)fecharModal();}
         if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').catch(err=>console.log('SW:',err));}
-
-        window.addEventListener('load', () => {
-            fetch(window.location.href, {cache: 'no-store'})
-                .then(response => response.text())
-                .catch(err => console.log('Update check:', err));
-        });
-
+        window.addEventListener('load', () => {fetch(window.location.href, {cache: 'no-store'}).then(response => response.text()).catch(err => console.log('Update check:', err));});
         carregarDados(); carregarTabela(); atualizarGrafico();
     </script>
 </body>
